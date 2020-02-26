@@ -1,0 +1,10 @@
+---
+title: "assignment1"
+author: "nihat uzunalioglu - 2660298, emiel kempen - 2640580, saurabh jain - 2666959"
+date: "2/26/2020"
+output: pdf_document
+---
+
+```{r setup, set.seed(43), include=FALSE}
+knitr::opts_chunk$set(fig.height = 2.5)
+```
