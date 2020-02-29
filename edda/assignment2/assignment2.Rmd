@@ -48,6 +48,13 @@ p_interaction = anova(breadaov)$Pr[3]
 ```
 - The p-value for testing for $H_{0}$:$\gamma_{i,j}$ = 0 for all i, j is `r p_interaction`. Therefore, we reject the null hypothesis $H_{0}$ which means the interaction between environment and humidity is significant for this dataset.
 
+d) Which of the two factors has the greatest (numerical) influence on the decay? Is this a good question?
+```{r, echo=TRUE}
+summary(breadaov)[4]
+```
+
+- When we look up to the variance analysis results, `r bread[7, ]` which corresponds to an environment with intermediate and dry has the most decaying effect in the dataset.
+
 e) Check the model assumptions by using relevant diagnostic tools. Are there any outliers?
 
 ```{r, fig.height=4, echo=TRUE}
