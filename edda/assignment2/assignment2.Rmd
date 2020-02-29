@@ -37,3 +37,12 @@ interaction.plot(environment, humidity, hours, fixed = TRUE)
 boxplot(hours~humidity, data = bread)
 interaction.plot(humidity, environment, hours, fixed = TRUE)
 ```
+
+c) Perform an analysis of variance to test for effect of the factors temperature, humidity, and their interaction. Describe the interaction effect in words.
+
+```{r, echo=FALSE}
+# Creating linear model and ANOVA test
+breadaov = lm(hours~environment*humidity, data = bread); anova(breadaov)
+p_interaction = anova(breadaov)$Pr[3]
+```
+- The p-value for testing for $H_{0}$:$\gamma_{i,j}$ = 0 for all i, j is `r p_interaction`. Therefore, we reject the null hypothesis $H_{0}$ which means the interaction between environment and humidity is significant for this dataset.
