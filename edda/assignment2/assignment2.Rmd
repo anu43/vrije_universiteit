@@ -8,3 +8,20 @@ output: pdf_document
 ```{r setup, set.seed(43), include=FALSE}
 knitr::opts_chunk$set(fig.height = 2.5)
 ```
+
+## Exercise 1
+```{r, echo=FALSE}
+bread = read.table(file = 'data/bread.txt', header = TRUE)
+```
+a) The 18 slices came from a single loaf, but were randomized to the 6 combinations of conditions. Present an R-code for this randomization process.
+```{r, echo=TRUE}
+# The randomization process for 18 slices
+# Take hours column from the data
+hours = as.vector(as.matrix(bread$hours))
+# Create environment column
+environment = rep(c('cold', 'intermediate', 'warm'), each = 6)
+# Create humidity column
+humidity = rep(c('dry', 'wet'), each = 9)
+# Converting to data frame
+data.frame(cbind(hours, environment, humidity))
+```
