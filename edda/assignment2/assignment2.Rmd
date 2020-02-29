@@ -47,3 +47,13 @@ breadaov = lm(hours~environment*humidity, data = bread); anova(breadaov)
 p_interaction = anova(breadaov)$Pr[3]
 ```
 - The p-value for testing for $H_{0}$:$\gamma_{i,j}$ = 0 for all i, j is `r p_interaction`. Therefore, we reject the null hypothesis $H_{0}$ which means the interaction between environment and humidity is significant for this dataset.
+
+e) Check the model assumptions by using relevant diagnostic tools. Are there any outliers?
+
+```{r, fig.height=4, echo=TRUE}
+par(mfrow=c(2, 2))
+# Plot the linear fitted model graphs
+plot(breadaov)
+```
+
+- According to the tables we can say that `r bread[7,]` and `r bread[8,]` are the two that can be considered as outliers.
