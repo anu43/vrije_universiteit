@@ -25,3 +25,15 @@ humidity = rep(c('dry', 'wet'), each = 9)
 # Converting to data frame
 data.frame(cbind(hours, environment, humidity))
 ```
+
+b) Make two boxplots of hours versus the two factors and two interaction plots (keeping the two factors fixed in turn).
+```{r, echo=FALSE}
+# Divide into two columns
+par(mfrow=c(1, 2))
+# Boxplot vs interaction plot in hours~environment
+boxplot(hours~environment, data = bread)
+interaction.plot(environment, humidity, hours, fixed = TRUE)
+# Boxplot vs interaction plot in hours~humidity
+boxplot(hours~humidity, data = bread)
+interaction.plot(humidity, environment, hours, fixed = TRUE)
+```
