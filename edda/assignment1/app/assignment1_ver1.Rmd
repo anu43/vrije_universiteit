@@ -1,0 +1,461 @@
+---
+title: "assignment1"
+author: "nihat uzunalioglu - 2660298, emiel kempen - 2640580, saurabh jain - 2666959"
+date: "2/13/2020"
+output: pdf_document
+---
+
+```{r setup, set.seed(43), include=FALSE}
+knitr::opts_chunk$set(fig.height = 3)
+```
+
+## Exercise 1
+
+```{r, include=FALSE}
+# Retrieve p-values from t-test
+pvalue <- function(n, m, mu, nu, sd, B=1000){
+  # initialize p array
+  p = numeric(length = B)
+  # 1000 sample loop
+  for (b in 1:B) {
+    # generate x and y
+    x = rnorm(n, mean = mu, sd = sd); y = rnorm(m, mean = nu, sd = sd)
+    p[b] = t.test(x, y)[[3]]
+  }
+return(p)
+}
+
+# Power of t-test
+pow <- function(pvalues, percentage = 0.05) {
+  return(mean(pvalues < percentage))
+}
+
+# Retrieve power of t-test from numerous nu values
+powersFromDifferentNuVals <- function(n, m, mu, nu, sd){
+  # Set empty vector for every nu trial
+  powers = numeric(length = length(nu))
+  # Loop thru nu values
+  for (i in 1:length(nu)) {
+    # Calculate the p value
+    p <- pvalue(n, m, mu, nu[i], sd)
+    # Get powers from different t-test
+    powers[i] = pow(pvalues = p)
+  }
+  return(powers)
+}
+```
+
+a) Set n=m=30, mu=180 and sd=5. Calculate now the power of the t-test for every value of nu in the grid seq(175,185,by=0.25).
+
+```{r, echo=TRUE}
+n = m = 30; mu = 180; sd = 5
+# Assign nu
+nu = seq(175, 185, by=0.25)
+# Calculation of the power
+secA <- powersFromDifferentNuVals(n, m, mu, nu, sd)
+```
+
+b) Set n=m=100, mu=180 and sd=5. Repeat the preceding exercise. Add the plot to the preceding plot.
+
+```{r, echo=TRUE}
+n=m=100; mu=180; sd=5
+# Repeat the preceding exercise.
+# Calculation of the power
+secB <- powersFromDifferentNuVals(n, m, mu, nu, sd)
+```
+
+c) Set n=m=30, mu=180 and sd=15. Repeat the preceding exercise.
+
+```{r, echo=TRUE}
+n=m=30; mu=180; sd=15
+# Repeat the preceding exercise.
+# Calculation of the power
+secC <- powersFromDifferentNuVals(n, m, mu, nu, sd)
+```
+
+d) Explain your findings.
+
+```{r, echo=TRUE}
+# Set aligning for 3 different histograms
+par(mfrow=c(1,3))
+# X axis label
+xlab <- "mean(p < 0.05)"
+
+# Plot histograms
+hist(secA, freq = FALSE,
+     main = "Histogram of p, sd=5\nn=m=30",
+     xlab = xlab)
+
+hist(secB, freq = FALSE,
+     main = "Histogram of p, sd=5\nn=m=100",
+     xlab = xlab)
+
+hist(secC, freq = FALSE,
+     main = "Histogram of p, sd=15\nn=m=30",
+     xlab = xlab)
+```
+
+- Number of observations play a significant play in terms of the power of the test. While number of observations in x and y samples is 30, we came to the conclusion of H0, the null hypothesis, can be accepted even though we see an accumulation between 5% and 10% while standard deviation is equal to 15.
+
+## Exercise 2
+
+```{r, echo=TRUE}
+mich_1879 = read.table("light1879.txt")
+mich_1882 = read.table("light1882.txt", fill=TRUE)
+newcomb =read.table("light.txt")
+
+data_mich_1879 = data.matrix(mich_1879)
+data_mich_1882 = data.matrix(mich_1882)
+data_newcomb = data.matrix(newcomb)
+```
+
+a) Investigate the normality for all three data sets.
+
+```{r, echo=TRUE}
+# We determine  normality by plotting a histogram and QQ Plot for every dataset.
+par(mfrow=c(1,2))
+hist(data_mich_1879, main="Historgram of data:\nMichelson 1879")
+qqnorm(data_mich_1879, main="Q-Q Plot of data:\nMichelson 1879")
+par(mfrow=c(1,2))
+hist(data_mich_1882, main="Historgram of data:\nMichelson 1882")
+qqnorm(data_mich_1882, main="Q-Q Plot of data:\nMichelson 1882")
+par(mfrow=c(1,2))
+hist(data_newcomb, main="Historgram of data:\nNewcomb")
+qqnorm(data_newcomb, main="Q-Q Plot of data:\nNewcomb")
+```
+
+- The plots show a normal distribution for both of Michelson's measurements, as the histogram takes a bell-shaped curve and the QQ-plot follows a straight line. In Newcomb's measurements, these characteristics of a normal distribution do not show.
+
+b) Determine confidence intervals for the speed of light in km/sec for all three data sets (use population means). Comment on the intervals found.
+- First off, the measurements have to be transformed to km/sec following the calculation below:
+
+```{r, echo=TRUE}
+data_mich_1879_km_s = data_mich_1879 + 299000
+data_mich_1882_km_s = data_mich_1882 + 299000
+data_newcomb_km_s = 7.442/(((data_newcomb/1000)+24.8)/1000000)
+```
+
+- Lastly, we calculate the confidence intervals for the speed of light in km/sec for all three data sets using the One Sample t-test:
+
+```{r, echo=TRUE}
+t.test(data_mich_1879_km_s)[[4]]
+t.test(data_mich_1882_km_s)[[4]]
+t.test(data_newcomb_km_s)[[4]]
+```
+
+- From the confidence intervals, we learn that the 1879 measurements from Michelsen are the most consistent, as the upper and lower bounds value differ least from each other when compared to the confidence intervals of the other measurements. Newcomb's measurements come in second, and Michelsen's 1882 measurements deviate the most.
+
+c) Find on the internet the currently most accurate value for the speed of light. Is it consistent with the measurements of Michelson and Newcomb? - From Wikipedia, we learn that the currently most accurate value for the speed of light equals 299792.458 km/s.
+
+```{r, echo=TRUE}
+speed_of_light = 299792.458
+```
+
+- We then check whether this value falls within the upper and lower confidence levels of the three seperate datasets, to see whether it is consistent with the measurements of Michelson and Newcomb:
+
+```{r, echo=TRUE}
+t.test(data_mich_1879_km_s)[[4]][1]<=speed_of_light & speed_of_light<=t.test(data_mich_1879_km_s)[[4]][2]
+t.test(data_mich_1882_km_s)[[4]][1]<=speed_of_light & speed_of_light<=t.test(data_mich_1882_km_s)[[4]][2]
+t.test(data_newcomb_km_s)[[4]][1]<=speed_of_light & speed_of_light<=t.test(data_newcomb_km_s)[[4]][2]
+```
+
+- The currently most accurate value for the speed of light is thus consistent with the measurements of Newcomb and the 1882 measurements of Michelsen, but not his 1879 measurements.
+
+## Exercise 3
+
+a) Make an appropriate plot of this data set.
+
+```{r, echo=TRUE}
+# Read telephone.txt
+tel <- read.table(file = "telephone.txt", header = TRUE)
+# Divide row 2 for histogram and boxplot
+par(mfrow=c(1,3))
+# Plotting telephone.txt
+hist(x = tel$Bills,
+     main = "Telephone Bills\n[Original]",
+     xlab = "Bill")
+boxplot(x = tel$Bills,
+        main = "Telephone Bills\n[Original]",
+        xlab = "Bill")
+qqnorm(tel$Bills)
+```
+
+What marketing advice(s) would you give to the marketing manager? - There are two types of users occuring according to the tables, low paying and high paying. A campaign could be offered to the users for the middle class and as well as a motivation for the people who have low bills. This way, it will be well distributed along in each class and prefered for long time usage.
+
+Are there any inconsistencies in the data? If so, try to fix these. - When we look at the data, we can see that there are zero paying bills in the data which does not show any insight for us and can be misleading for the following campaign strategies so they are extracted from the data and differences can be seen in the following charts.
+
+```{r, echo=TRUE}
+# Extract zero bills from the data
+nonZeroBills <- tel[tel$Bills != 0, ]
+# Divide row 2 for histogram and boxplot
+par(mfrow=c(1,3))
+# Plotting telephone.txt
+hist(x = nonZeroBills,
+     main = "Telephone Bills\n[Original]",
+     xlab = "Bill")
+boxplot(x = nonZeroBills,
+        main = "Telephone Bills\n[Original]",
+        xlab = "Bill")
+qqnorm(nonZeroBills)
+```
+
+b) By using a bootstrap test with the test statistic T = median(X1,...,X200), test whether the data telephone.txt stems from the exponential distribution Exp($\lambda$) with some $\lambda$ from [0.01, 0.1].
+
+```{r, echo=TRUE}
+# We use as test statistic the median of the data
+t = median(x=tel$Bills)
+print(paste("The median equals", t))
+
+# Set the simulation repeat
+B = 1000
+# Create T* array
+tstar = numeric(length = B)
+# Assign sample length
+n = length(tel$Bills)
+# Assign lambda vector
+lamb = sample(c(0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07,
+                0.08, 0.9, 0.1), replace = TRUE, size = n)
+# Simulate B times
+for (i in 1:B) {
+  # Get sample from Exp(lambda)
+  xstar = rexp(n, rate = sample(lamb, 1))
+  # Receives tstar by the test statistics the median
+  tstar[i] = median(xstar)
+}
+# Draw histogram
+hist(tstar, prob=T, col = "grey",
+     main = "Histogram of T*",
+     xlab = "T* [T star]")
+# Draw density curve of T
+lines(density(tstar), col="blue", lwd=2) # add a density estimate with defaults
+lines(density(tstar, adjust=2), lty="dotted", col="darkgreen", lwd=2) 
+axis(1, t, expression(paste("t") ) )
+```
+
+```{r, echo=TRUE}
+# P left
+pl = sum(tstar < t) / B
+# P right
+pr = sum(tstar > t) / B
+p = 2 * min(pl, pr)
+print(paste("The p value is", p, "and H0 is not rejected"))
+```
+
+c) Construct a 95% bootstrap confidence interval for the population median of the sample.
+
+```{r, echo=TRUE}
+confLvl <- t.test(tel$Bills)[[4]]
+print(paste("%95 confidence interval for the sample: [",
+            confLvl[1], ",", confLvl[2], "]"))
+```
+
+d) Assuming $X_{1}, ..., X_{N}$ ~ $Exp(\lambda)$ and using the central limit theorem for the sample mean, estimate $\lambda$ and construct again a 95% confidence interval for the population median. Comment on your findings.
+
+```{r, echo=TRUE}
+# Align two histogram
+par(mfrow = c(1,2))
+# Distribution type
+lambda <- 0.2
+# Sample size
+n <- 150
+# Trials
+rows <- 1000
+
+# Simulate
+sim <- rexp(n*rows, lambda)
+# Plot histogram
+hist(sim, main = "Exp(0.2) Distribution",
+     xlab = "Value")
+# Create matrix
+m <- matrix(sim, rows)
+
+# Calculate sample means
+sample.means <- rowMeans(m)
+
+# Calculate mean and standard deviation
+# of the simulation for CLT(Central Limit Theorem)
+sm.avg <- mean(sample.means); sm.sd <- sd(sample.means)
+# Plot average
+hist(sample.means,
+     main = "Central Limit Theorem\nfor the sample mean",
+     xlab = "Means")
+# Theoretical(Expected) standard deviation
+sm.sd.clt <- sqrt(lambda/n)
+# Average of the simulation, standard deviation
+# and expected standard deviation
+sm.avg; sm.sd; sm.sd.clt
+
+# Calculation of %95 confidence level for the mean
+confLvl <- t.test(sample.means)[[4]]
+print(paste("%95 confidence interval for the sample: [",
+            confLvl[1], ",", confLvl[2], "]"))
+
+```
+
+- The figure on the left hand side shows $Exp(\lambda=2)$ distribution and the figure on the right hand side shows the normal distribution after the application of Central Limit Theorem(CLT) for the sample mean. After doing 1000 simulations with samples have 150 sample size, Central Limit Theorem again proves that as the repetation goes infinity, a perfect normal distribution occurs.
+
+```{r, echo=TRUE}
+# Estimated lambda
+es_lambda = 1 / sm.avg
+```
+- The $\lambda$ can be estimated by $\frac{1}{mu_{estimated}}$. Thus, this leads us $\lambda$ = `r 1/sm.avg`.
+
+e) Using an appropriate test, test the null hypothesis that the median bill is bigger or equal to 40 euro against the alternative that the median bill is smaller than 40 euro.
+- In the section A, as we plotted histogram, boxplot and QQ-Plot to be able to observe whether the data has normality or not, it is clear that the data does not have a normality within samples. For these kinds of non-normality situations we choose to apply either sign or Wilcoxon test on the dataset.
+
+```{r, echo=TRUE}
+# Get sum where bills are >= 40
+cond <- sum(tel$Bills >= 40)
+# Sign test
+binom.test(cond, length(tel$Bills), alternative = "less")[3]
+# Wilcoxon test
+wilcox.test(tel$Bills, mu=40)[3]
+```
+
+Next, design and perform a test to check whether the fraction of the bills less than 10 euro is at most 25%.
+
+```{r, echo=TRUE}
+# Sign test
+cond <- sum(tel$Bills <= 9.999)
+binom.test(cond, length(tel$Bills), alternative = "greater")[3]
+```
+
+## Exercise 4
+
+a) Disregarding the type of drink, test whether the run times before drink and after are correlated.
+```{r}
+run <- read.table(file = "run.txt", header = TRUE)
+res <- cor.test(run$before,run$after)
+res[3]
+```
+- p-value of the correlation test is `r res[3]`, which is less than the significance level $\alpha$ = 0.05.
+
+b) Test separately, for both the softdrink and the energy drink conditions, whether there is a difference
+in speed in the two running tasks.
+```{r, echo=FALSE}
+library("ggpubr", warn.conflicts = FALSE)
+```
+```{r, echo=TRUE}
+softdrink <- subset(run, drink == "lemo")
+boxplot(softdrink[,1],softdrink[,2],names=c("Before","After"))
+cor.test(softdrink$before,softdrink$after)[3]
+energydrink <- subset(run, drink == "energy")
+boxplot(energydrink[,1],energydrink[,2],names=c("Before","After"))
+cor.test(energydrink$before,energydrink$after)[3]
+```
+- In case of softdrinks, boxplots suggests increased distribution of speeds and increased median speed than before.
+- In case of energy drink, boxplots suggests that running speed was decreased after taking the energy drink because the median of speed is lower than before and overall distribution also decreased.
+
+c) For each pupil compute the time difference between the two running tasks. Test whether these time
+differences are effected by the type of drink.
+
+```{r}
+time_diff <- numeric(length = length(run$before))
+for (i in seq_along(time_diff)) {
+  time_diff[i] <- run$before[i] - run$after[i]
+}
+time_diff
+drink_type <- as.numeric(as.factor(run$drink))
+cor.test(time_diff,drink_type)[3]
+```
+- As per the test, there is a negative correlation but the value is significantly smaller which indicate that the time difference and type of drink is not strong correlated.
+
+d) Can you think of a plausible objection to the design of the experiment in b) if the main aim was to test
+whether drinking the energy drink speeds up the running? Is there a similar objection to the design of the experiment in c)? Comment on all your findings in this exercise.
+- If the main aim was to test whether drinking the energy drink speeds up the running then the other group could have been a placebo group because soft drinks could also hinder the performance of the participant. This could affect the results of the test.
+- Yes, as mentioned earlier, if soft drinks had any impact on the running performance, then time difference would be significantly impacted.
+
+
+## Exercise 5
+
+a) Test whether the distributions of the chicken weights for meatmeal and sunflower groups are different by performing three tests: the two samples t-test (argue whether the data are paired or not), the Mann-Whitney test and the Kolmogorov-Smirnov test.
+
+```{r, echo=FALSE}
+meatMeal <- chickwts[chickwts$feed == 'meatmeal', ]
+sunFlower <- chickwts[chickwts$feed == 'sunflower', ]
+options(digits = 3)
+```
+
+```{r, echo=TRUE}
+# Two samples t-test
+t.test(meatMeal$weight, sunFlower$weight)
+
+# Mann-Whitney test
+wilcox.test(meatMeal$weight, sunFlower$weight)
+
+# Kolmogorov-Smirnov test
+ks.test(meatMeal$weight, sunFlower$weight)
+
+# Means of meatMeal and sunFlower
+mM <- mean(meatMeal$weight)
+mS <- mean(sunFlower$weight)
+```
+
+Comment on your findings.
+- $H_{0}$ is rejected for the two samples t-test. The true difference between the means are not zero thus we cannot assume that they are paired and observation number does not match as well to have a paired test.
+- $H_{0}$ of equal medians is rejected for the Mann-Whitney test. The underlying distribution of meatmeal is shifted to the left from that of sunflower.
+- $H_{0}$ of equal means should not be rejected since it is larger than 5%. But when we look at the means of both variables, `r mM` and `r mS`, we can see that they differ from each other even though test results say that we should not to.
+
+b) Conduct a one-way ANOVA to determine whether the type of feed supplement has an effect on the weight of the chicks.
+
+```{r, echo=TRUE}
+# One way ANOVA test
+chicaov = lm(weight ~ feed, data = chickwts)
+anova(chicaov)
+summary(chicaov)$coefficients
+```
+
+Give the estimated chick weights for each of the six feed supplements.
+
+```{r, echo=TRUE}
+# Set the base mean mu1=323.583
+mu_hat1 <- 323.583
+mu_hat2 <- -163.383 + mu_hat1
+mu_hat3 <- -104.833 + mu_hat1
+mu_hat4 <- -46.674 + mu_hat1
+mu_hat5 <- -77.155 + mu_hat1
+mu_hat6 <- 5.333 + mu_hat1
+```
+
+Estimated chick weights for each of the  six supplements are;
+with casein, it is `r mu_hat1`,
+with horsebean, it is `r mu_hat2`,
+with linseed, it is `r mu_hat3`,
+with meatmeal, it is `r mu_hat4`,
+with soybean, it is `r mu_hat5`,
+with sunflower, it is `r mu_hat6`.
+
+What is the best feed supplement?
+- According to the ANOVA results, sunflower type of feed is the most relevant and has resemblance with the base level(Intercept).
+
+c) Check the ANOVA model assumptions by using relevant diagnostic tools.
+
+```{r, echo=TRUE}
+# permutation tests for independent samples
+attach(chickwts, warn.conflicts = FALSE)
+mystat = function(x) sum(residuals(x)^2)
+B = 1000
+tstar = numeric(B)
+for (i in 1:B) {
+  feedtstar = sample(feed)
+  tstar[i] = mystat(lm(weight ~ feedtstar, data = chickwts))
+}
+myt = mystat(lm(weight ~ feed, data = chickwts))
+hist(tstar)
+myt
+pl=sum(tstar<myt)/B
+pr=sum(tstar>myt)/B
+2 * pl
+```
+
+- Permutation test for independent samples has the same setting as 1-way ANOVA. The p value that we had from the permutation test shows that feeding supplement plays a significant role for the weight of the chicken.
+
+d) Does the Kruskal-Wallis test arrive at the same conclusion about the effect of feed supplement as the
+test in b)? Explain possible differences between this conclusion and the conclusion from b).
+
+```{r, echo=TRUE}
+# the Kruskal-Wallis test
+attach(chickwts, warn.conflicts = FALSE); kruskal.test(weight, feed)
+```
+
+The command kruskal.test performs the Kruskal-Wallis test and yields a p-value. The p-value for testing $H_{0}$ : F1 = F2 = F3 = F4 is 5.11283e-07, hence $H_{0}$ is rejected. We got similar p value from the ANOVA test as well which was 5.936e-10. The reason we say similar is because they are both very small values even though they differ each other by $10^{3}$.
