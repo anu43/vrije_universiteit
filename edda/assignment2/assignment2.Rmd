@@ -18,19 +18,20 @@ a) The 18 slices came from a single loaf, but were randomized to the 6 combinati
 ```{r, echo=TRUE}
 # The randomization process for 18 slices
 # Take hours column from the data
-hours = as.vector(as.matrix(bread$hours))
+hrs = as.vector(as.matrix(bread$hours))
 # Create environment column
-environment = rep(c('cold', 'intermediate', 'warm'), each = 6)
+env = rep(c('cold', 'intermediate', 'warm'), each = 6)
 # Create humidity column
-humidity = rep(c('dry', 'wet'), each = 9)
+humi = rep(c('dry', 'wet'), each = 3)
 # Converting to data frame
-data.frame(cbind(hours, environment, humidity))
+head(data.frame(cbind(hrs, env, humi)))
 ```
 
 b) Make two boxplots of hours versus the two factors and two interaction plots (keeping the two factors fixed in turn).
-```{r, echo=FALSE}
+```{r, fig.height=4,echo=FALSE}
 # Divide into two columns
 par(mfrow=c(1, 2))
+attach(bread)
 # Boxplot vs interaction plot in hours~environment
 boxplot(hours~environment, data = bread)
 interaction.plot(environment, humidity, hours, fixed = TRUE)
