@@ -1,0 +1,449 @@
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{hyperref}
+\hypersetup{
+            pdftitle={assignment1},
+            pdfauthor={nihat uzunalioglu - 2660298, emiel kempen - 2640580, saurabh jain - 2666959},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+
+\title{assignment1}
+\author{nihat uzunalioglu - 2660298, emiel kempen - 2640580, saurabh jain -
+2666959}
+\date{2/26/2020}
+
+\begin{document}
+\maketitle
+
+\hypertarget{exercise-1}{%
+\subsection{Exercise 1}\label{exercise-1}}
+
+\begin{enumerate}
+\def\labelenumi{\alph{enumi})}
+\tightlist
+\item
+  The 18 slices came from a single loaf, but were randomized to the 6
+  combinations of conditions. Present an R-code for this randomization
+  process.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# The randomization process for 18 slices}
+\CommentTok{# Take hours column from the data}
+\NormalTok{hours =}\StringTok{ }\KeywordTok{as.vector}\NormalTok{(}\KeywordTok{as.matrix}\NormalTok{(bread}\OperatorTok{$}\NormalTok{hours))}
+\CommentTok{# Create environment column}
+\NormalTok{environment =}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{'cold'}\NormalTok{, }\StringTok{'intermediate'}\NormalTok{, }\StringTok{'warm'}\NormalTok{), }\DataTypeTok{each =} \DecValTok{6}\NormalTok{)}
+\CommentTok{# Create humidity column}
+\NormalTok{humidity =}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{'dry'}\NormalTok{, }\StringTok{'wet'}\NormalTok{), }\DataTypeTok{each =} \DecValTok{9}\NormalTok{)}
+\CommentTok{# Converting to data frame}
+\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{cbind}\NormalTok{(hours, environment, humidity))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    hours  environment humidity
+## 1    360         cold      dry
+## 2    360         cold      dry
+## 3    372         cold      dry
+## 4    420         cold      dry
+## 5    456         cold      dry
+## 6    432         cold      dry
+## 7    192 intermediate      dry
+## 8    276 intermediate      dry
+## 9    252 intermediate      dry
+## 10   132 intermediate      wet
+## 11   120 intermediate      wet
+## 12   144 intermediate      wet
+## 13   252         warm      wet
+## 14   276         warm      wet
+## 15   264         warm      wet
+## 16    60         warm      wet
+## 17    72         warm      wet
+## 18    72         warm      wet
+\end{verbatim}
+
+\begin{enumerate}
+\def\labelenumi{\alph{enumi})}
+\setcounter{enumi}{1}
+\item
+  Make two boxplots of hours versus the two factors and two interaction
+  plots (keeping the two factors fixed in turn).
+  \includegraphics{assignment2_files/figure-latex/unnamed-chunk-3-1.pdf}
+  \includegraphics{assignment2_files/figure-latex/unnamed-chunk-3-2.pdf}
+\item
+  Perform an analysis of variance to test for effect of the factors
+  temperature, humidity, and their interaction. Describe the interaction
+  effect in words.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Creating linear model and ANOVA test}
+\NormalTok{breadaov =}\StringTok{ }\KeywordTok{lm}\NormalTok{(hours}\OperatorTok{~}\NormalTok{environment}\OperatorTok{*}\NormalTok{humidity, }\DataTypeTok{data =}\NormalTok{ bread); }\KeywordTok{anova}\NormalTok{(breadaov)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Analysis of Variance Table
+## 
+## Response: hours
+##                      Df Sum Sq Mean Sq F value    Pr(>F)
+## environment           2 201904  100952 233.685 2.461e-10
+## humidity              1  26912   26912  62.296 4.316e-06
+## environment:humidity  2  55984   27992  64.796 3.705e-07
+## Residuals            12   5184     432
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{p_interaction =}\StringTok{ }\KeywordTok{anova}\NormalTok{(breadaov)}\OperatorTok{$}\NormalTok{Pr[}\DecValTok{3}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  The p-value for testing for \(H_{0}\):\(\gamma_{i,j}\) = 0 for all i,
+  j is \ensuremath{3.7054783\times 10^{-7}}. Therefore, we reject the
+  null hypothesis \(H_{0}\) which means the interaction between
+  environment and humidity is significant for this dataset.
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\alph{enumi})}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  Which of the two factors has the greatest (numerical) influence on the
+  decay? Is this a good question?
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(breadaov)[}\DecValTok{4}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## $coefficients
+##                                     Estimate Std. Error    t value     Pr(>|t|)
+## (Intercept)                              364   12.00000  30.333333 1.032769e-12
+## environmentintermediate                 -124   16.97056  -7.306770 9.389760e-06
+## environmentwarm                         -100   16.97056  -5.892557 7.336887e-05
+## humiditywet                               72   16.97056   4.242641 1.142103e-03
+## environmentintermediate:humiditywet     -180   24.00000  -7.500000 7.233671e-06
+## environmentwarm:humiditywet             -268   24.00000 -11.166667 1.073751e-07
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  When we look up to the variance analysis results, 192, 2, 1 which
+  corresponds to an environment with intermediate and dry has the most
+  decaying effect in the dataset.
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\alph{enumi})}
+\setcounter{enumi}{4}
+\tightlist
+\item
+  Check the model assumptions by using relevant diagnostic tools. Are
+  there any outliers?
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{))}
+\CommentTok{# Plot the linear fitted model graphs}
+\KeywordTok{plot}\NormalTok{(breadaov)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{assignment2_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+\begin{itemize}
+\tightlist
+\item
+  According to the tables we can say that 192, 2, 1 and 276, 2, 1 are
+  the two that can be considered as outliers.
+\end{itemize}
+
+\hypertarget{exercise-2}{%
+\subsection{Exercise 2}\label{exercise-2}}
+
+\begin{enumerate}
+\def\labelenumi{\alph{enumi})}
+\tightlist
+\item
+  Number the selected students 1 to 15 and show how (by using R) the
+  students could be randomized to the interfaces in a randomized block
+  design.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# N <- as.vector(as.matrix(search_data$time))}
+\CommentTok{# I <- as.vector(as.matrix(search_data$skill))}
+\CommentTok{# B <- as.vector(as.matrix(search_data$interface))}
+\CommentTok{# for (i in 1:B) print(sample(1:(N*I)))}
+\KeywordTok{xtabs}\NormalTok{(time}\OperatorTok{~}\NormalTok{interface}\OperatorTok{+}\NormalTok{skill,}\DataTypeTok{data=}\NormalTok{search_data)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##          skill
+## interface    1    2    3    4    5
+##         1 16.1 14.5 17.6 21.1 21.5
+##         2 15.6 20.4 19.8 24.8 23.7
+##         3 20.5 21.2 23.9 22.2 25.3
+\end{verbatim}
+
+\begin{enumerate}
+\def\labelenumi{\alph{enumi})}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  Make some graphical summaries of the data. Are any interactions
+  between interface and skill apparent?
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# interaction.plot(search_data$interface, search_data$skill, search_data$time)}
+\CommentTok{# boxplot(search_data$interface, search_data$skill, search_data$time)}
+\KeywordTok{attach}\NormalTok{(search_data)}
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\KeywordTok{boxplot}\NormalTok{(time}\OperatorTok{~}\NormalTok{interface)}
+\KeywordTok{boxplot}\NormalTok{(time}\OperatorTok{~}\NormalTok{skill)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{assignment2_files/figure-latex/unnamed-chunk-9-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\KeywordTok{interaction.plot}\NormalTok{(skill,interface,time)}
+\KeywordTok{interaction.plot}\NormalTok{(interface,skill,time)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{assignment2_files/figure-latex/unnamed-chunk-9-2.pdf}
+
+\begin{enumerate}
+\def\labelenumi{\alph{enumi})}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  Test the null hypothesis that the search time is the same for all
+  interfaces. Estimate the time it takes a typical user of skill level 3
+  to find the product on the website if the website uses interface 2.
+\item
+  Check the model assumptions by using relevant diagnostic tools.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{aovsearch=}\KeywordTok{lm}\NormalTok{(time}\OperatorTok{~}\NormalTok{interface}\OperatorTok{+}\NormalTok{skill)}
+\KeywordTok{anova}\NormalTok{(aovsearch)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Analysis of Variance Table
+## 
+## Response: time
+##           Df Sum Sq Mean Sq F value    Pr(>F)
+## interface  1 49.729  49.729  21.422 0.0005817
+## skill      1 78.732  78.732  33.916 8.165e-05
+## Residuals 12 27.856   2.321
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(aovsearch)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = time ~ interface + skill)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.19667 -0.73167 -0.05667  1.07333  2.63333 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)
+## (Intercept)  11.2267     1.3341   8.415 2.23e-06
+## interface     2.2300     0.4818   4.628 0.000582
+## skill         1.6200     0.2782   5.824 8.16e-05
+## 
+## Residual standard error: 1.524 on 12 degrees of freedom
+## Multiple R-squared:  0.8218, Adjusted R-squared:  0.7921 
+## F-statistic: 27.67 on 2 and 12 DF,  p-value: 3.203e-05
+\end{verbatim}
+
+\begin{enumerate}
+\def\labelenumi{\alph{enumi})}
+\setcounter{enumi}{4}
+\tightlist
+\item
+  Perform the non-parametric Friedman test to test whether there is an
+  effect of interface.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{friedman.test}\NormalTok{(time,interface,skill)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Friedman rank sum test
+## 
+## data:  time, interface and skill
+## Friedman chi-squared = 6.4, df = 2, p-value = 0.04076
+\end{verbatim}
+
+\begin{enumerate}
+\def\labelenumi{\alph{enumi})}
+\setcounter{enumi}{5}
+\tightlist
+\item
+  Test the null hypothesis that the search time is the same for all
+  interfaces by a one-wayANOVA test, ignoring the variable skill. Is it
+  right/wrong or useful/not useful to perform this test on this dataset?
+  What assumption on the way the data were obtained is necessary for
+  this test to be valid, and was this assumption met?
+\end{enumerate}
+
+\hypertarget{exercise-3}{%
+\subsection{Exercise 3}\label{exercise-3}}
+
+\begin{enumerate}
+\def\labelenumi{\alph{enumi})}
+\item
+  Test whether the type of feedingstuffs innfluences milk production
+  using an ordinary ``fixed effects'' model, fitted with \texttt{lm}.
+  Estimate the difference in milk production.
+\item
+  Repeat a) and b) by performing a mixed effects analysis, modelling the
+  cow effect as a random effect (use the function lmer). Compare your
+  results to the results found by using a fixed effects model. (You will
+  need to install the R-package lme4, which is not included in the
+  standard distribution of R.)
+\item
+  Study the commands:
+\end{enumerate}
+
+\begin{verbatim}
+  \> attach(cow) 
+  \> t.test(milk[treatment=="A"],milk[treatment=="B"],paired=TRUE)
+\end{verbatim}
+
+Does this produce a valid test for a difference in milk production? Is
+its conclusion compatible with the one obtained in a)? Why?
+
+\end{document}

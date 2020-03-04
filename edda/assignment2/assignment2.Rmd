@@ -65,3 +65,63 @@ plot(breadaov)
 ```
 
 - According to the tables we can say that `r bread[7,]` and `r bread[8,]` are the two that can be considered as outliers.
+
+## Exercise 2
+
+```{R, echo=FALSE}
+search_data <- read.table("data/search.txt", header=TRUE)
+```
+
+a) Number the selected students 1 to 15 and show how (by using R) the students could be randomized to the interfaces in a randomized block design.
+
+```{R, echo=TRUE}
+# N <- as.vector(as.matrix(search_data$time))
+# I <- as.vector(as.matrix(search_data$skill))
+# B <- as.vector(as.matrix(search_data$interface))
+# for (i in 1:B) print(sample(1:(N*I)))
+xtabs(time~interface+skill,data=search_data)
+```
+
+b) Make some graphical summaries of the data. Are any interactions between interface and skill apparent?
+
+```{R, echo=TRUE}
+# interaction.plot(search_data$interface, search_data$skill, search_data$time)
+# boxplot(search_data$interface, search_data$skill, search_data$time)
+attach(search_data)
+par(mfrow=c(1,2))
+boxplot(time~interface)
+boxplot(time~skill)
+
+par(mfrow=c(1,2))
+interaction.plot(skill,interface,time)
+interaction.plot(interface,skill,time)
+```
+
+c) Test the null hypothesis that the search time is the same for all interfaces. Estimate the time it takes a typical user of skill level 3 to find the product on the website if the website uses interface 2.
+d) Check the model assumptions by using relevant diagnostic tools.
+
+```{R,echo=TRUE}
+aovsearch=lm(time~interface+skill)
+anova(aovsearch)
+summary(aovsearch)
+```
+
+e) Perform the non-parametric Friedman test to test whether there is an effect of interface.
+
+```{R, echo=TRUE}
+friedman.test(time,interface,skill)
+```
+f) Test the null hypothesis that the search time is the same for all interfaces by a one-wayANOVA test, ignoring the variable skill. Is it right/wrong or useful/not useful to perform this test on this dataset? What assumption on the way the data were obtained is necessary for this test to be valid, and was this assumption met?
+
+## Exercise 3
+
+a) Test whether the type of feedingstuffs innfluences milk production using an ordinary "fixed effects" model, fitted with ```lm```. Estimate the difference in milk production.
+
+b) Repeat a) and b) by performing a mixed effects analysis, modelling the cow effect as a random effect (use the function lmer). Compare your results to the results found by using a fixed effects model. (You will need to install the R-package lme4, which is not included in the standard distribution of R.)
+
+c) Study the commands: 
+```
+  \> attach(cow) 
+  \> t.test(milk[treatment=="A"],milk[treatment=="B"],paired=TRUE)
+```
+Does this produce a valid test for a difference in milk production? Is its conclusion compatible with the one obtained in a)? Why?
