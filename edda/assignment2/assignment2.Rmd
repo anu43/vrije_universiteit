@@ -327,7 +327,7 @@ a) Make some graphical summaries of the data. Investigate the problem of potenti
 plot(expenses_crime[,c(3:7)])
 ```
 
-In the plot below, there's are 'potential points' on x axis between values 70000-85000.
+In the plot below, there are 'potential points' on x axis between values 70000-85000.
 ```{r}
 plot(expenses_crime$lawyers, expenses_crime$employ)
 
@@ -338,6 +338,11 @@ In the following plot, we clearly see an influence point: the Cook’s distance 
 model = lm( expend~lawyers+employ ,data = expenses_crime)
 round(cooks.distance(model),2)
 plot(cooks.distance(model),type="b")
+```
+
+Influence PLot
+```{r}
+influencePlot(model, main="Influence Plot", sub="Circle size represents Cook's Distance")
 ```
 
 In the following graph and correlation table, 'pop' and 'employ' are collinear with correlation value of 0.9707407.
