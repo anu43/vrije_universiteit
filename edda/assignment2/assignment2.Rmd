@@ -341,15 +341,13 @@ plot(expenses_crime$lawyers, expenses_crime$employ)
 ```{r}
 model = lm( expend~lawyers+employ ,data = expenses_crime)
 round(cooks.distance(model),2)
+library(car)
+par(mfrow=c(1, 2))
 plot(cooks.distance(model),type="b")
+influencePlot(model, main="Influence Plot", sub="Circle size corresponds Cook's Distance")
 ```
 In the plot above, we clearly see influence points: the Cook’s distance is `r round(cooks.distance(model),2)[5]` for the leverage point at index 5 and `r round(cooks.distance(model),2)[8]` for the leverage point at index 8.
 
-Influence PLot
-```{r}
-library(car)
-influencePlot(model, main="Influence Plot", sub="Circle size corresponds Cook's Distance")
-```
 
 In the following graph and correlation table, 'pop' and 'employ' are collinear with correlation value of `r cor(expenses_crime[,c(3:7)])[24]`.
 ```{r}
