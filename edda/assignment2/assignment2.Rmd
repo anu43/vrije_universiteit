@@ -125,3 +125,162 @@ c) Study the commands:
   \> t.test(milk[treatment=="A"],milk[treatment=="B"],paired=TRUE)
 ```
 Does this produce a valid test for a difference in milk production? Is its conclusion compatible with the one obtained in a)? Why?
+
+
+
+
+## Exercise 4
+
+```{r}
+nauseatable = read.table(file = 'nauseatable.txt', header = TRUE)
+```
+
+a) Make a data.frame in R consisting of two columns and 304 rows. One column should contain an indicator whether or not the patient in that row suffered from nausea, and the other column should indicate the medicin. Make sure these columns match correctly. Study the outcome of xtabs(∼medicin+naus).
+
+```{r}
+table_to_vector = unlist(nauseatable,  use.names = FALSE)
+# Create nausea column, possible values 0 (No Nausea), 1(Nausea)
+nausea = rep(c('0', '1'), each = 3, times = c(table_to_vector))
+med = c('Chlorpromazine','Pentobarbital(100mg)','Pentobarbital(150mg)')
+# Create mdecine column, contains name of all the medicines
+medicine = rep(c(med,med), each = 1, times = c(table_to_vector))
+df = data.frame(cbind(nausea, medicine))
+xtabs(~medicine+nausea)
+```
+
+b) Perform a permutation test in order to test whether the different medicins work equally well against nausea. Permute the medicin labels for this purpose. Use as test statistic the chisquare test statistic for contingency tables, which can be extracted from the output of the command chisq.test: chisq.test(xtabs(∼medicin+nausea))[[1]].
+
+```{r}
+#options(scipen = 999)
+nausea_yes <- df[df$nausea == "1",]
+
+meds = factor(nausea_yes$medicine)
+mystat=function(x) sum(residuals(x)^2)
+B=1000
+tstar=numeric(B)
+for (i in 1:B) {
+  treatstar=sample(meds)
+  tstar[i]=mystat(lm(as.numeric(as.character(nausea_yes$nausea))~treatstar))
+}
+myt=mystat(lm(as.numeric(as.character(nausea_yes$nausea))~treatstar))
+myt
+hist(tstar)
+pl=sum(tstar<myt)/B
+pr=sum(tstar>myt)/B
+pl
+2*pl
+
+chisq.test(xtabs(~medicine+nausea))[[1]]
+```
+
+c) Compare the p-value found by the permutation test with the p-value found from the chisquare test for contingency tables. Explain the difference/equality of the two p-values.
+
+
+## Exercise 5
+
+```{r}
+expenses_crime = read.table(file = 'expensescrime.txt', header = TRUE)
+```
+
+b) Fit a linear regression model to the data. Use both the step-up and the step-down method to find the best model. If step-up and step-down yield two different models, choose one and motivate your choice.
+
+In the dataset there are 5 possible explantory variables, bad, crime, lawyers, employ, and pop.
+```{r}
+# Step Up method
+summary(lm( expend~bad ,data = expenses_crime))
+summary(lm( expend~crime ,data = expenses_crime))
+summary(lm( expend~lawyers ,data = expenses_crime))
+summary(lm( expend~employ ,data = expenses_crime))
+summary(lm( expend~pop ,data = expenses_crime))
+```
+Explanotory variable 'employ' delivers the highest R^2 value.
+
+```{r}
+summary(lm( expend~employ+bad ,data = expenses_crime))
+summary(lm( expend~employ+crime ,data = expenses_crime))
+summary(lm( expend~employ+lawyers ,data = expenses_crime))
+summary(lm( expend~employ+pop ,data = expenses_crime))
+```
+Newly added variable 'lawyers' yields better R^2 compared to others.
+
+```{r}
+summary(lm( expend~employ+lawyers+bad ,data = expenses_crime))
+summary(lm( expend~employ+lawyers+crime ,data = expenses_crime))
+summary(lm( expend~employ+lawyers+pop ,data = expenses_crime))
+```
+Adding additional variables leads to insignificant explanatory variables. Thus, 'step up' process need to be stopped at previous step.
+
+```{r}
+#Final model for the step up approach
+summary(lm( expend~employ+lawyers ,data = expenses_crime))
+```
+Step Down method
+
+```{r}
+summary(lm( expend~bad+crime+lawyers+employ+pop ,data = expenses_crime))
+```
+Explanatory variable 'bad' has p-value is larger than 0.05. Thus removing it from the model.
+```{r}
+summary(lm( expend~crime+lawyers+employ+pop ,data = expenses_crime))
+
+```
+Explanatory variable 'crime' and 'pop' has p-value is larger than 0.05. Thus removing them from the model.
+```{r}
+#Final model using Step down method
+summary(lm( expend~lawyers+employ ,data = expenses_crime))
+
+```
+No need to remove further variables as all remaining explanatory variables in the model are significant.
+Conclusion: "Step up' and 'Step down' methods results into same model with R-squared:  0.9632.
+
+a) Make some graphical summaries of the data. Investigate the problem of potential and influence points, and the problem of collinearity.
+```{r}
+plot(expenses_crime[,c(3:7)])
+```
+
+In the plot below, there's are 'potential points' on x axis between values 70000-85000.
+```{r}
+plot(expenses_crime$lawyers, expenses_crime$employ)
+
+```
+
+In the following plot, we clearly see an influence point: the Cook’s distance is 5.47 for the leverage point at index 5 and 6.38 for the leverage point at index 8.
+```{r}
+model = lm( expend~lawyers+employ ,data = expenses_crime)
+round(cooks.distance(model),2)
+plot(cooks.distance(model),type="b")
+```
+
+In the following graph and correlation table, 'pop' and 'employ' are collinear with correlation value of 0.9707407.
+```{r}
+cor(expenses_crime[,c(3:7)])
+plot(expenses_crime$pop, expenses_crime$employ)
+```
+
+
+VIF values of both the variables in the model is higher than 5, which represents the collinearity problem. Also after adding highly correlational varioble to the model, VIF of the model goes up.
+```{r}
+install.packages("car")
+library(car)
+
+model1 = lm( expend~lawyers+employ+pop ,data = expenses_crime)
+vif(model)
+vif(model1)
+```
+
+c) Check the model assumptions by using relevant diagnostic tools.
+
+Scatter plot of residuals against each Xk in the model separately.
+```{r}
+lw_model = lm( expend~lawyers ,data = expenses_crime)
+plot(residuals(lw_model),expenses_crime$lawyers)
+
+em_model = lm( expend~employ ,data = expenses_crime)
+plot(residuals(em_model),expenses_crime$employ)
+```
+
+From the normal QQ-plot of the residuals it is evident that error is not normally distributed.
+
+```{r}
+qqnorm(residuals(model))
+```
