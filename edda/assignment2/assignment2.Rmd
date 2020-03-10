@@ -253,7 +253,7 @@ pmin = min(pl,pr)
 pvalue = 2*pmin
 pvalue
 ```
-The obtained p-value is very high thus we conclude that the variables are not dependent and we accept the null hypothesis.
+The obtained p-value is very high thus we conclude that the variables are not dependent and we accept the null hypothesis ($H_0$).
 
 c) Compare the p-value found by the permutation test with the p-value found from the chisquare test for contingency tables. Explain the difference/equality of the two p-values.
 
