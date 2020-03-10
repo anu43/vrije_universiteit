@@ -340,7 +340,6 @@ plot(expenses_crime$lawyers, expenses_crime$employ)
 
 ```{r}
 model = lm( expend~lawyers+employ ,data = expenses_crime)
-round(cooks.distance(model),2)
 library(car)
 par(mfrow=c(1, 2))
 plot(cooks.distance(model),type="b")
@@ -356,11 +355,9 @@ plot(expenses_crime$pop, expenses_crime$employ)
 ```
 
 
-VIF values of both the variables in the model is higher than 5, which represents the collinearity problem. Also after adding highly correlational varioble to the model, VIF of the model goes up.
+VIF values of both the variables in the model is higher than 5, which represents the collinearity problem.
 ```{r}
-model1 = lm( expend~lawyers+employ+pop ,data = expenses_crime)
 vif(model)
-vif(model1)
 ```
 Since both the variables have same value, we need to remove one of the variables from the model as below:
 ```{r}
