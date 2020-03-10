@@ -109,7 +109,7 @@ aovsearch=lm(time~interface+skill, data=search); anova(aovsearch)
 
 - From the ANOVA test follows a p-value for interface of `r anova(aovsearch)[[5]][1]`. This indicates that we can reject that the null hypothesis $H_0$, that stated that the means of the search times for all interfaces is the same.
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, results = 'hide'}
 summary(aovsearch)[4]
 ```
 
@@ -131,14 +131,14 @@ plot(fitted(aovsearch),residuals(aovsearch))
 
 e)
 
-```{R, echo=TRUE}
+```{R, echo=TRUE, results = 'hide'}
 friedman.test(time,interface,skill)
 ```
 - We reject $H_0$ (= interface does not have an effect) as the p-value is `r friedman.test(time,interface,skill)[3]`, which is lower than 5%.
 
 f)
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, results = 'hide'}
 aovsearch2 = lm(time~interface, data=search); anova(aovsearch2)
 ```
 
@@ -153,7 +153,7 @@ qqline(residuals(aovsearch2))
 
 ## Exercise 3
 
-``` {r, echo=FALSE}
+``` {r, echo=FALSE, results = 'hide'}
 library(lme4)
 ```
 
@@ -163,14 +163,14 @@ cow = read.table("data/cow.txt", header=TRUE)
 
 a)
 
-``` {r, echo=TRUE}
+``` {r, echo=TRUE, results = 'hide'}
 aovcow = lm(milk~id+per+treatment,data=cow)
 anova(aovcow)
 ```
 
 - The factor of interest here is type of feedingstuffs (treatment), which is therefore put in as the last factor of the ANOVA formula. The ANOVA outputs a p-value of `r anova(aovcow)[[5]][3]`, which means we accept the null hypothesis that treatment does not influence the milk production ($H_0$).
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, results = 'hide'}
 cow$id = factor(cow$id); cow$per=factor(cow$per)
 cowlm = lm(milk~treatment+per+id, data=cow)
 summary(cowlm)
@@ -180,7 +180,7 @@ summary(cowlm)
 
 b)
 
-``` {r, echo=TRUE}
+``` {r, echo=TRUE, results = 'hide'}
 attach(cow)
 cowlmer1 = lmer(milk~treatment+order+per+(1|id),REML=FALSE)
 cowlmer2 = lmer(milk~order+per+(1|id),REML=FALSE)
@@ -189,7 +189,7 @@ anova(cowlmer2,cowlmer1)
 
 - By performing a mixed effects analysis in the form of an ANOVA test, modelling the cow effect as a random effect using `lmer`, we find that the p-value equals `r anova(cowlmer2,cowlmer1)[[8]][2]`. This leads us to accepting the hypothesis that treatment does not influence the milk production ($H_0$)
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, results = 'hide'}
 summary(cowlmer1)
 ```
 
@@ -353,7 +353,7 @@ influencePlot(model, main="Influence Plot", sub="Circle size corresponds Cook's 
 
 In the following graph and correlation table, 'pop' and 'employ' are collinear with correlation value of `r cor(expenses_crime[,c(3:7)])[24]`.
 ```{r}
-cor(expenses_crime[,c(3:7)])
+cor(expenses_crime[,c(3:7)])[24]
 plot(expenses_crime$pop, expenses_crime$employ)
 ```
 
@@ -375,9 +375,10 @@ c)
 Scatter plot of residuals against each Xk in the model separately. There is no visible pattern in the plots.
 ```{r}
 lw_model = lm( expend~lawyers ,data = expenses_crime)
-plot(residuals(lw_model),expenses_crime$lawyers)
-
 em_model = lm( expend~employ ,data = expenses_crime)
+
+par(mfrow=c(1, 2))
+plot(residuals(lw_model),expenses_crime$lawyers)
 plot(residuals(em_model),expenses_crime$employ)
 ```
 
