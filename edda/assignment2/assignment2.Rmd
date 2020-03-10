@@ -18,15 +18,14 @@ a)
 
 ```{r, echo=TRUE}
 # The randomization process for 18 slices
-# Take hours column from the data
-hrs = as.vector(as.matrix(bread$hours))
-# Create environment column
-env = rep(c('cold', 'intermediate', 'warm'), each = 6)
-# Create humidity column
-humi = rep(c('dry', 'wet'), each = 3)
-# Converting to data frame
-head(data.frame(cbind(hrs, env, humi)))
+N=3; I=2; J=3
+rbind(rep(1:I, each = N*J), rep(1:J, N*I), sample(1:(N*I*J)))
 ```
+N: the number of units for each combination
+I: the levels of humidity
+J: the levels of environment
+
+We performed randomization according to the levels of the dataset. This way we can randomly assign slices of bread to the different levels of the dataset.
 
 b)
 ```{r, fig.height=4,echo=FALSE}
@@ -45,6 +44,9 @@ c)
 
 ```{r, echo=TRUE}
 # Creating linear model and ANOVA test
+# Factorization
+bread$humidity = as.factor(bread$humidity)
+bread$environment = as.factor(bread$environment)
 breadaov = lm(hours~environment*humidity, data = bread); anova(breadaov)
 p_interaction = anova(breadaov)$Pr[3]
 ```
@@ -52,10 +54,15 @@ p_interaction = anova(breadaov)$Pr[3]
 
 d) 
 ```{r, echo=TRUE}
+contrasts(bread$humidity)=contr.sum
+contrasts(bread$environment)=contr.sum
+breadaov2 = lm(hours~humidity*environment,data=bread)
 summary(breadaov)[4]
 ```
 
-- When we look up to the variance analysis results, `r bread[7, ]` which corresponds to an environment with intermediate and dry has the most decaying effect in the dataset.
+- Here we can see that the environment factor affects the hours in a bigger way than humidity. We can see changes of $149.33$ and $-64.66$ in comparison with $38.667$.
+
+- We don't think it's a good question though, because we agree that the root of impact lies in the relationship between these two variables rather than just one of them, even though it indicates bigger changes.
 
 e)
 
