@@ -221,6 +221,11 @@ med = c('Chlorpromazine','Pentobarbital(100mg)','Pentobarbital(150mg)')
 # Create mdecine column, contains name of all the medicines
 medicine = rep(c(med,med), each = 1, times = c(table_to_vector))
 df = data.frame(cbind(nausea, medicine))
+```
+
+While studying the outcome of the table below, we see that with xtabs we get a contingency table from the medicine and nausea factors.
+There are more people suffering from nausea with the medicine Chlorpromazine than with Pentobarbital.
+```{r}
 xtabs(~medicine+nausea)
 ```
 
@@ -228,28 +233,33 @@ b) Perform a permutation test in order to test whether the different medicins wo
 
 ```{r}
 #options(scipen = 999)
-nausea_yes <- df[df$nausea == "1",]
-
-meds = factor(nausea_yes$medicine)
-mystat=function(x) sum(residuals(x)^2)
-B=1000
-tstar=numeric(B)
+B = 1000
+tstar = numeric(B) 
 for (i in 1:B) {
-  treatstar=sample(meds)
-  tstar[i]=mystat(lm(as.numeric(as.character(nausea_yes$nausea))~treatstar))
+  medicintstar = sample(medicine)
+  tstar[i] = chisq.test(xtabs(~medicintstar+nausea, data = nauseatable))[[1]] 
 }
-myt=mystat(lm(as.numeric(as.character(nausea_yes$nausea))~treatstar))
-myt
+myt = chisq.test(xtabs(~medicine+nausea, data = nauseatable))[[1]] 
 hist(tstar)
-pl=sum(tstar<myt)/B
-pr=sum(tstar>myt)/B
-pl
-2*pl
-
-chisq.test(xtabs(~medicine+nausea))[[1]]
 ```
 
+```{r}
+pl = sum(tstar<myt)/B 
+pr = sum(tstar>myt)/B
+pmin = min(pl,pr) 
+pvalue = 2*pmin
+pvalue
+```
+
+
 c) Compare the p-value found by the permutation test with the p-value found from the chisquare test for contingency tables. Explain the difference/equality of the two p-values.
+
+```{r}
+pvalue_chisq = chisq.test(xtabs(~medicine+nausea, data = nauseatable))[[3]]
+pvalue_tstar=2*pmin
+pvalue_chisq
+pvalue_tstar
+```
 
 
 ## Exercise 5
