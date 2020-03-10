@@ -219,6 +219,7 @@ med = c('Chlorpromazine','Pentobarbital(100mg)','Pentobarbital(150mg)')
 # Create medicine column, contains name of all the medicines
 medicine = rep(c(med,med), each = 1, times = c(table_to_vector))
 df = data.frame(cbind(nausea, medicine))
+(df[c(1,101,133,181,233,268),])
 ```
 
 While studying the outcome of the table below, we see that with xtabs we get a contingency table from the medicine and nausea factors.
