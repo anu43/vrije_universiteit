@@ -233,13 +233,16 @@ b) Perform a permutation test in order to test whether the different medicins wo
 
 ```{r}
 #options(scipen = 999)
-B = 1000
-tstar = numeric(B) 
+meds = factor(medicine)
+mystat=function(x) sum(residuals(x)^2)
+B=1000
+tstar=numeric(B)
 for (i in 1:B) {
-  medicintstar = sample(medicine)
-  tstar[i] = chisq.test(xtabs(~medicintstar+nausea, data = nauseatable))[[1]] 
+  treatstar=sample(meds)
+  tstar[i]=mystat(lm(nausea~treatstar))
 }
-myt = chisq.test(xtabs(~medicine+nausea, data = nauseatable))[[1]] 
+myt=mystat(lm(nausea~treatstar))
+myt
 hist(tstar)
 ```
 
@@ -250,7 +253,7 @@ pmin = min(pl,pr)
 pvalue = 2*pmin
 pvalue
 ```
-
+The obtained p-value is very high thus we conclude that the variables are not dependent and we accept the null hypothesis.
 
 c) Compare the p-value found by the permutation test with the p-value found from the chisquare test for contingency tables. Explain the difference/equality of the two p-values.
 
