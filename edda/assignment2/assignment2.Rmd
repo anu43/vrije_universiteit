@@ -1,8 +1,10 @@
 ---
-title: "assignment1"
+title: "assignment2"
 author: "nihat uzunalioglu - 2660298, emiel kempen - 2640580, saurabh jain - 2666959"
 date: "2/26/2020"
-output: pdf_document
+output:
+  pdf_document: default
+  word_document: default
 ---
 
 ```{r setup, set.seed(43), include=FALSE}
@@ -14,7 +16,7 @@ options(show.signif.stars=FALSE)
 ```{r, echo=FALSE}
 bread = read.table(file = 'data/bread.txt', header = TRUE)
 ```
-a) 
+a)
 
 ```{r, echo=TRUE}
 # The randomization process for 18 slices
@@ -24,11 +26,10 @@ rbind(rep(1:I, each = N*J), rep(1:J, N*I), sample(1:(N*I*J)))
 N: the number of units for each combination
 I: the levels of humidity
 J: the levels of environment
-
-We performed randomization according to the levels of the dataset. This way we can randomly assign slices of bread to the different levels of the dataset.
+- We performed randomization according to the levels of the dataset. This way we can randomly assign slices of bread to the different levels of the dataset.
 
 b)
-```{r, fig.height=4,echo=FALSE}
+```{r, echo=FALSE}
 # Divide into two columns
 par(mfrow=c(1, 2))
 attach(bread)
@@ -41,7 +42,6 @@ interaction.plot(humidity, environment, hours, fixed = TRUE)
 ```
 
 c)
-
 ```{r, echo=TRUE}
 # Creating linear model and ANOVA test
 # Factorization
