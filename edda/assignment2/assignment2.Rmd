@@ -240,10 +240,10 @@ mystat=function(x) sum(residuals(x)^2)
 B=1000
 tstar=numeric(B)
 for (i in 1:B) {
-  treatstar=sample(meds)
-  tstar[i]=mystat(lm(nausea~treatstar))
+  treatstar=sample(medicine)
+  tstar[i]=chisq.test(xtabs(~treatstar+nausea, data = nauseatable))[[1]]
 }
-myt=mystat(lm(nausea~treatstar))
+myt=chisq.test(xtabs(~medicine+nausea, data = nauseatable))[[1]]
 myt
 hist(tstar)
 ```
@@ -252,58 +252,57 @@ hist(tstar)
 pl = sum(tstar<myt)/B 
 pr = sum(tstar>myt)/B
 pmin = min(pl,pr) 
-pvalue = 2*pmin
-pvalue
+(pvalue = pmin)
 ```
-The obtained p-value is very high thus we conclude that the variables are not dependent and we accept the null hypothesis ($H_0$).
+The obtained p-value from permutation test is over 5% thus we accept the null hypothesis ($H_0$) and conclude that the variables are not dependent.
 
 c) Compare the p-value found by the permutation test with the p-value found from the chisquare test for contingency tables. Explain the difference/equality of the two p-values.
 
 ```{r}
-pvalue_chisq = chisq.test(xtabs(~medicine+nausea, data = nauseatable))[[3]]
-pvalue_tstar=2*pmin
-pvalue_chisq
-pvalue_tstar
+(pvalue_chisq = chisq.test(xtabs(~medicine+nausea, data = nauseatable))[[3]])
+(pvalue_tstar=pmin)
 ```
+
+We received very close p-values from both the permutation and chi-square tests. Even though we received `r (pvalue_tstar=pmin)` from the permutation test, since they both statiscally perform with regards to significance of the factors we accepted the null hypothesis ($H_0$). Since a single chi-squared test is one member from the permutation test, having close result is justifiable.
 
 
 ## Exercise 5
 
 ```{r}
-expenses_crime = read.table(file = 'expensescrime.txt', header = TRUE)
+expenses_crime = read.table(file = 'data/expensescrime.txt', header = TRUE)
 ```
 
 b) Fit a linear regression model to the data. Use both the step-up and the step-down method to find the best model. If step-up and step-down yield two different models, choose one and motivate your choice.
 
-In the dataset there are 5 possible explantory variables, bad, crime, lawyers, employ, and pop.
+In the dataset there are 5 possible explantory `variables`, `bad`, `crime`, `lawyers`, `employ`, and `pop`.
 ```{r}
 # Step Up method
-summary(lm( expend~bad ,data = expenses_crime))
-summary(lm( expend~crime ,data = expenses_crime))
-summary(lm( expend~lawyers ,data = expenses_crime))
-summary(lm( expend~employ ,data = expenses_crime))
-summary(lm( expend~pop ,data = expenses_crime))
+summary(lm( expend~bad ,data = expenses_crime))[[9]]
+summary(lm( expend~crime ,data = expenses_crime))[[9]]
+summary(lm( expend~lawyers ,data = expenses_crime))[[9]]
+summary(lm( expend~employ ,data = expenses_crime))[[9]]
+summary(lm( expend~pop ,data = expenses_crime))[[9]]
 ```
-Explanotory variable 'employ' delivers the highest R^2 value.
+Explanotory variable 'employ' delivers the highest $R^2$ value.
 
 ```{r}
-summary(lm( expend~employ+bad ,data = expenses_crime))
-summary(lm( expend~employ+crime ,data = expenses_crime))
-summary(lm( expend~employ+lawyers ,data = expenses_crime))
-summary(lm( expend~employ+pop ,data = expenses_crime))
+summary(lm( expend~employ+bad ,data = expenses_crime))[[9]]
+summary(lm( expend~employ+crime ,data = expenses_crime))[[9]]
+summary(lm( expend~employ+lawyers ,data = expenses_crime))[[9]]
+summary(lm( expend~employ+pop ,data = expenses_crime))[[9]]
 ```
-Newly added variable 'lawyers' yields better R^2 compared to others.
+Newly added variable 'lawyers' yields better $R^2$ compared to others.
 
 ```{r}
-summary(lm( expend~employ+lawyers+bad ,data = expenses_crime))
-summary(lm( expend~employ+lawyers+crime ,data = expenses_crime))
-summary(lm( expend~employ+lawyers+pop ,data = expenses_crime))
+summary(lm( expend~employ+lawyers+bad ,data = expenses_crime))[[9]]
+summary(lm( expend~employ+lawyers+crime ,data = expenses_crime))[[9]]
+summary(lm( expend~employ+lawyers+pop ,data = expenses_crime))[[9]]
 ```
 Adding additional variables leads to insignificant explanatory variables. Thus, 'step up' process need to be stopped at previous step.
 
 ```{r}
 #Final model for the step up approach
-summary(lm( expend~employ+lawyers ,data = expenses_crime))
+summary(lm( expend~employ+lawyers ,data = expenses_crime))[[9]]
 ```
 Step Down method
 
@@ -332,10 +331,9 @@ plot(expenses_crime[,c(3:7)])
 In the plot below, there are 'potential points' on x axis between values 70000-85000.
 ```{r}
 plot(expenses_crime$lawyers, expenses_crime$employ)
-
 ```
 
-In the following plot, we clearly see an influence point: the Cook’s distance is `r round(cooks.distance(model),2)[5]` for the leverage point at index 5 and `r round(cooks.distance(model),2)[8]` for the leverage point at index 8.
+In the following plot, we clearly see influence points: the Cook’s distance is `r round(cooks.distance(model),2)[5]` for the leverage point at index 5 and `r round(cooks.distance(model),2)[8]` for the leverage point at index 8.
 ```{r}
 model = lm( expend~lawyers+employ ,data = expenses_crime)
 round(cooks.distance(model),2)
@@ -344,10 +342,12 @@ plot(cooks.distance(model),type="b")
 
 Influence PLot
 ```{r}
-influencePlot(model, main="Influence Plot", sub="Circle size represents Cook's Distance")
+install.packages("car")
+library(car)
+influencePlot(model, main="Influence Plot", sub="Circle size corresponds Cook's Distance")
 ```
 
-In the following graph and correlation table, 'pop' and 'employ' are collinear with correlation value of 0.9707407.
+In the following graph and correlation table, 'pop' and 'employ' are collinear with correlation value of `r cor(expenses_crime[,c(3:7)])[24]`.
 ```{r}
 cor(expenses_crime[,c(3:7)])
 plot(expenses_crime$pop, expenses_crime$employ)
@@ -356,13 +356,15 @@ plot(expenses_crime$pop, expenses_crime$employ)
 
 VIF values of both the variables in the model is higher than 5, which represents the collinearity problem. Also after adding highly correlational varioble to the model, VIF of the model goes up.
 ```{r}
-install.packages("car")
-library(car)
-
 model1 = lm( expend~lawyers+employ+pop ,data = expenses_crime)
 vif(model)
 vif(model1)
 ```
+Since both the variables have same value, we need to remove one of the variables from the model as below:
+```{r}
+model_new = lm( expend~lawyers ,data = expenses_crime)
+```
+
 
 c) Check the model assumptions by using relevant diagnostic tools.
 
