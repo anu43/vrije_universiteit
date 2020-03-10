@@ -364,7 +364,7 @@ vif(model1)
 
 c) Check the model assumptions by using relevant diagnostic tools.
 
-Scatter plot of residuals against each Xk in the model separately.
+Scatter plot of residuals against each Xk in the model separately. There is no visible pattern in the plots.
 ```{r}
 lw_model = lm( expend~lawyers ,data = expenses_crime)
 plot(residuals(lw_model),expenses_crime$lawyers)
