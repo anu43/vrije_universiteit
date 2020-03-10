@@ -210,7 +210,7 @@ t.test(milk[treatment=="A"],milk[treatment=="B"],paired=TRUE)
 ## Exercise 4
 
 ```{r}
-nauseatable = read.table(file = 'nauseatable.txt', header = TRUE)
+nauseatable = read.table(file = 'data/nauseatable.txt', header = TRUE)
 ```
 
 a) Make a data.frame in R consisting of two columns and 304 rows. One column should contain an indicator whether or not the patient in that row suffered from nausea, and the other column should indicate the medicin. Make sure these columns match correctly. Study the outcome of xtabs(∼medicin+naus).
@@ -333,16 +333,16 @@ In the plot below, there are 'potential points' on x axis between values 70000-8
 plot(expenses_crime$lawyers, expenses_crime$employ)
 ```
 
-In the following plot, we clearly see influence points: the Cook’s distance is `r round(cooks.distance(model),2)[5]` for the leverage point at index 5 and `r round(cooks.distance(model),2)[8]` for the leverage point at index 8.
+
 ```{r}
 model = lm( expend~lawyers+employ ,data = expenses_crime)
 round(cooks.distance(model),2)
 plot(cooks.distance(model),type="b")
 ```
+In the plot above, we clearly see influence points: the Cook’s distance is `r round(cooks.distance(model),2)[5]` for the leverage point at index 5 and `r round(cooks.distance(model),2)[8]` for the leverage point at index 8.
 
 Influence PLot
 ```{r}
-install.packages("car")
 library(car)
 influencePlot(model, main="Influence Plot", sub="Circle size corresponds Cook's Distance")
 ```
