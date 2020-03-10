@@ -316,11 +316,11 @@ summary(lm( expend~crime+lawyers+employ+pop ,data = expenses_crime))
 Explanatory variable 'crime' and 'pop' has p-value is larger than 0.05. Thus removing them from the model.
 ```{r}
 #Final model using Step down method
-summary(lm( expend~lawyers+employ ,data = expenses_crime))
+summary(lm( expend~lawyers+employ ,data = expenses_crime))[8]
 
 ```
 No need to remove further variables as all remaining explanatory variables in the model are significant.
-Conclusion: "Step up' and 'Step down' methods results into same model with R-squared:  0.9632.
+Conclusion: "Step up' and 'Step down' methods results into same model with R-squared:  `r summary(lm( expend~lawyers+employ ,data = expenses_crime))[8]`.
 
 a) Make some graphical summaries of the data. Investigate the problem of potential and influence points, and the problem of collinearity.
 ```{r}
@@ -333,7 +333,7 @@ plot(expenses_crime$lawyers, expenses_crime$employ)
 
 ```
 
-In the following plot, we clearly see an influence point: the Cook’s distance is 5.47 for the leverage point at index 5 and 6.38 for the leverage point at index 8.
+In the following plot, we clearly see an influence point: the Cook’s distance is `r round(cooks.distance(model),2)[5]` for the leverage point at index 5 and `r round(cooks.distance(model),2)[8]` for the leverage point at index 8.
 ```{r}
 model = lm( expend~lawyers+employ ,data = expenses_crime)
 round(cooks.distance(model),2)
