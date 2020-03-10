@@ -68,55 +68,51 @@ plot(breadaov)
 
 ## Exercise 2
 
-```{R, echo=FALSE}
-search <- read.table("data/search.txt", header=TRUE)
+```{r}
+search = read.table("data/search.txt", header=TRUE)
 ```
 
 a) Number the selected students 1 to 15 and show how (by using R) the students could be randomized to the interfaces in a randomized block design.
 
-```{R, echo=TRUE}
-N <- as.vector(as.matrix(search$time))
-I <- as.vector(as.matrix(search$skill))
-B <- as.vector(as.matrix(search$interface))
+```{r, results = 'hide'}
+N = 1 #
+I = 3 
+B = 5
 for (i in 1:B){
   print(sample(1:(N*I)))
 }
-# xtabs(time~interface+skill,data=search)
 ```
+
+- The blocks created represent the students grouped per skill-level, so totaling to 5 blocks of 3 students each. For block 1 assign student 1 to interface 1, student 3 to interface 2, etc., for block 2 assign student 1 to interface 1, student 2 to interface 2, etc.
 
 b) Make some graphical summaries of the data. Are any interactions between interface and skill apparent?
 
 ```{R, echo=TRUE}
-# interaction.plot(search_data$interface, search_data$skill, search_data$time)
-# boxplot(search_data$interface, search_data$skill, search_data$time)
 
 attach(search)
-# par(mfrow=c(1,2))
-# boxplot(time~interface)
-# boxplot(time~skill)
 
 par(mfrow=c(1,2))
 interaction.plot(interface,skill,time)
 interaction.plot(skill,interface,time)
 ```
-- The pattern ($\alpha1, \alpha2, . . . , \alpha_I$) of treatment effects is assumed to be the same within every block. However, the lines in the seperate interaction plots do not seem to follow similar paths. Therefore, we can assume that there is interaction between interface and skill.
+- The pattern ($\alpha1, \alpha2, . . . , \alpha_I$) of treatment effects is assumed to be the same within every block. However, the lines in the seperate interaction plots do not seem to be parallel. Therefore, we can assume that there is an interaction between interface and skill.
 
 c) Test the null hypothesis that the search time is the same for all interfaces. Estimate the time it takes a typical user of skill level 3 to find the product on the website if the website uses interface 2.
 
-```{R,echo=TRUE}
+```{r, results = 'hide'}
 search$skill = as.factor(search$skill)
 search$interface = as.factor(search$interface)
 
 aovsearch=lm(time~interface+skill, data=search); anova(aovsearch)
 ```
 
-- From the ANOVA test follows a p-value for interface of `r anova(aovsearch)[[5]][1]`. This indicates that we can reject that the null hypothesis $H_0$, that stated that the mean of the interfaces are the same.
+- From the ANOVA test follows a p-value for interface of `r anova(aovsearch)[[5]][1]`. This indicates that we can reject that the null hypothesis $H_0$, that stated that the means of the search times for all interfaces is the same.
 
 ```{r, echo=TRUE}
-summary(aovsearch)
+summary(aovsearch)[4]
 ```
 
-- Data are assumed to follow the model $Y_{i,b,n} = \mu + \alpha_i + \beta_b + e_{i,b,n}$. Filling in for skill level 3 and interface 2: $Y_{2,3} = 15.013 + 2.700 + 3.033 =$ `r 15.013 + 2.700 + 3.033`$s$. This is the estimated time it takes a typical user of skill level 3 to find the product on the website if the website uses interface 2.
+- Data are assumed to follow the model $Y_{i,b,n} = \mu + \alpha_i + \beta_b + e_{i,b,n}$. Filling in for skill level 3 and interface 2: $Y_{2,3} = 15.013 + 2.700 + 3.033 =$ `r 15.013 + 2.700 + 3.033` $s$. This is the estimated time it takes a typical user of skill level 3 to find the product on the website if the website uses interface 2.
 
 d) Check the model assumptions by using relevant diagnostic tools.
 
@@ -124,30 +120,30 @@ d) Check the model assumptions by using relevant diagnostic tools.
 qqnorm(residuals(aovsearch));qqline(residuals(aovsearch))
 ```
 
-- The QQ-plot seems to deviate a bit from a straight line in the extremes, but the data can be assumed to be normally distributed.
+- The QQ-plot seems to deviate a bit from a straight line in the extremes, but the residuals can be assumed to be normally distributed.
 
 ```{R,echo=TRUE}
 plot(fitted(aovsearch),residuals(aovsearch))
 ```
 
-- The scatter plot shows that the residuals are not. It can therefore be assumed that the populations have equal variances.
+- The scatter plot shows no clear pattern, so the residuals are (almost) symmetrically distributed.
 
 e) Perform the non-parametric Friedman test to test whether there is an effect of interface.
 
 ```{R, echo=TRUE}
 friedman.test(time,interface,skill)
 ```
-- We reject $H_0$ (= interface does not have an effect) as the p-value is < 5%.
+- We reject $H_0$ (= interface does not have an effect) as the p-value is `r friedman.test(time,interface,skill)[3]`, which is lower than 5%.
 
 f) Test the null hypothesis that the search time is the same for all interfaces by a one-wayANOVA test, ignoring the variable `skill`. Is it right/wrong or useful/not useful to perform this test on this dataset? What assumption on the way the data were obtained is necessary for this test to be valid, and was this assumption met?
 
-```{R, echo=TRUE}
-aovsearch2=lm(time~interface, data=search); anova(aovsearch2)
+```{r, echo=TRUE}
+aovsearch2 = lm(time~interface, data=search); anova(aovsearch2)
 ```
 
-- The one-wayANOVA, ignoring the variable `skill`, outputs a p-value of `r anova(aovsearch2)[[5]][1]`. Therefore, we cannot reject $H_0$, meaning that the means are the same for the different interfaces.
-- As we the interaction plots in question 2b) showed that there is interaction between interface and skill, it is not right nor usefull to ignore the variable skill.
-- The assumption of a one-wayANOVA is that the data is normally distrubuted. However, the QQ-plot below shows that the data is not normal, so the assumption is not met.
+- The one-wayANOVA, ignoring the variable `skill`, outputs a p-value of `r anova(aovsearch2)[[5]][1]`. Therefore, we cannot reject $H_0$, meaning that the means of the search times are the same for the different interfaces.
+- As we the interaction plots in question 2b) showed that there is interaction between interface and skill, it is not right nor useful to ignore the variable `skill`.
+- The assumption of a one-wayANOVA is that the data is normally distrubuted. However, the QQ-plot below shows that the data is not normal, so the assumption is not met, nor is it valid.
 
 ```{R, echo=TRUE}
 qqnorm(residuals(aovsearch2))
@@ -156,41 +152,47 @@ qqline(residuals(aovsearch2))
 
 ## Exercise 3
 
-``` {r, echo=TRUE}
-library(multcomp)
+``` {r, echo=FALSE}
 library(lme4)
-cow <- read.table("data/cow.txt", header=TRUE)
 ```
 
-a) Test whether the type of feedingstuffs innfluences milk production using an ordinary "fixed effects" model, fitted with `lm`. Estimate the difference in milk production.
+```{r, echo=TRUE}
+cow = read.table("data/cow.txt", header=TRUE)
+```
+
+a) Test whether the type of feedingstuffs influences milk production using an ordinary "fixed effects" model, fitted with `lm`. Estimate the difference in milk production.
 
 ``` {r, echo=TRUE}
-cow$id=factor(cow$id); cow$per=factor(cow$per)
-aovcow=lm(milk~id+per+treatment,data=cow)
+aovcow = lm(milk~id+per+treatment,data=cow)
 anova(aovcow)
 ```
 
-- The ANOVA outputs a p-value of `r anova(aovcow)[[5]][3]`, which means that we cannot reject the hypothesis that treatment does not influence the milk production ($H_0$).
+- The factor of interest here is type of feedingstuffs (treatment), which is therefore put in as the last factor of the ANOVA formula. The ANOVA outputs a p-value of `r anova(aovcow)[[5]][3]`, which means we accept the null hypothesis that treatment does not influence the milk production ($H_0$).
 
 ```{r, echo=TRUE}
-cowlm <- lm(milk~treatment+per+id,data=cow)
-(diff_milk <- glht(cowlm,linfct=mcp(treatment="Tukey")))
+cow$id = factor(cow$id); cow$per=factor(cow$per)
+cowlm = lm(milk~treatment+per+id, data=cow)
+summary(cowlm)
 ```
 
-- 
+- The difference between treatment A (the Intercept) and treatment B is `r summary(cowlm)[[4]][2]`.
 
-b) Repeat a) and b) by performing a mixed effects analysis, modelling the cow effect as a random effect (use the function lmer). Compare your results to the results found by using a fixed effects model. (You will need to install the R-package lme4, which is not included in the standard distribution of R.)
+b) Repeat a) and b) by performing a mixed effects analysis, modelling the cow effect as a random effect (use the function `lmer`). Compare your results to the results found by using a fixed effects model.
 
 ``` {r, echo=TRUE}
 attach(cow)
-cowlmer1 <- lmer(milk~treatment+order+per+(1|id),REML=FALSE)
-cowlmer2 <- lmer(milk~order+per+(1|id),REML=FALSE)
+cowlmer1 = lmer(milk~treatment+order+per+(1|id),REML=FALSE)
+cowlmer2 = lmer(milk~order+per+(1|id),REML=FALSE)
 anova(cowlmer2,cowlmer1)
 ```
 
+- By performing a mixed effects analysis in the form of an ANOVA test, modelling the cow effect as a random effect using `lmer`, we find that the p-value equals `r anova(cowlmer2,cowlmer1)[[8]][2]`. This leads us to accepting the hypothesis that treatment does not influence the milk production ($H_0$)
+
 ```{r, echo=TRUE}
-(diff_milklmer =glht(cowlmer1,linfct=mcp(treatment="Tukey")))
+summary(cowlmer1)
 ```
+
+- From the `summary` function, it follows that - just as in question 3a) - the difference between treatment A (the Intercept) and treatment B is `r summary(cowlmer1)[[10]][2]`.
 
 c) Study the commands:
 
@@ -199,11 +201,11 @@ c) Study the commands:
 
 Does this produce a valid test for a difference in milk production? Is its conclusion compatible with the one obtained in a)? Why?
 
-```{r, echo=TRUE}
+```{r, results='hide'}
 attach(cow)
 t.test(milk[treatment=="A"],milk[treatment=="B"],paired=TRUE)
 ```
-- The t-test outputs the p-value `r t.test(milk[treatment=="A"],milk[treatment=="B"],paired=TRUE)[3]`, we therefore cannot reject $H_0$ that there is no difference in milk production. This is indeed compatible with 3a), where we concluded that the treatment did not influence the milk production. In other words, the difference of the means of milk production between both treatments is 0. This t-test is thus a valid test.
+- The t-test outputs the p-value `r t.test(milk[treatment=="A"],milk[treatment=="B"],paired=TRUE)[3]`, we therefore cannot reject $H_0$ that there is no difference in milk production given the two treatments. This is indeed compatible with 3a), where we concluded that the treatment did not influence the milk production. This t-test is thus a valid test.
 
 ## Exercise 4
 
