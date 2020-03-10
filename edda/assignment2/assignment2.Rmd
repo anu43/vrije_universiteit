@@ -6,7 +6,7 @@ output: pdf_document
 ---
 
 ```{r setup, set.seed(43), include=FALSE}
-knitr::opts_chunk$set(fig.height = 2.5)
+knitr::opts_chunk$set(fig.height = 3)
 options(show.signif.stars=FALSE)
 ```
 
@@ -299,24 +299,31 @@ Adding additional variables leads to insignificant explanatory variables. Thus, 
 
 ```{r}
 #Final model for the step up approach
-summary(lm( expend~employ+lawyers ,data = expenses_crime))[[9]]
+summary(lm( expend~employ+lawyers ,data = expenses_crime))[8]
 ```
 Step Down method
 
 ```{r}
-summary(lm( expend~bad+crime+lawyers+employ+pop ,data = expenses_crime))
+summary(lm( expend~bad+crime+lawyers+employ+pop ,data = expenses_crime))[[4]]
 ```
-Explanatory variable 'bad' has p-value is larger than 0.05. Thus removing it from the model.
+Explanatory variable 'crime' has p-value is larger than 0.05. Thus removing it from the model.
 ```{r}
-summary(lm( expend~crime+lawyers+employ+pop ,data = expenses_crime))
+summary(lm( expend~bad+lawyers+employ+pop ,data = expenses_crime))[[4]]
 
 ```
-Explanatory variable 'crime' and 'pop' has p-value is larger than 0.05. Thus removing them from the model.
+Explanatory variable 'bad' has p-value is larger than 0.05. Thus removing them from the model.
 ```{r}
 #Final model using Step down method
+summary(lm( expend~lawyers+employ+pop ,data = expenses_crime))[[4]]
+
+```
+Explanatory variable 'pop' has p-value is larger than 0.05. Thus removing them from the model.
+
+```{r}
 summary(lm( expend~lawyers+employ ,data = expenses_crime))[8]
 
 ```
+
 No need to remove further variables as all remaining explanatory variables in the model are significant.
 Conclusion: "Step up' and 'Step down' methods results into same model with R-squared:  `r summary(lm( expend~lawyers+employ ,data = expenses_crime))[8]`.
 
