@@ -218,13 +218,13 @@ table_to_vector = unlist(nauseatable,  use.names = FALSE)
 # Create nausea column, possible values 0 (No Nausea), 1(Nausea)
 nausea = rep(c('0', '1'), each = 3, times = c(table_to_vector))
 med = c('Chlorpromazine','Pentobarbital(100mg)','Pentobarbital(150mg)')
-# Create mdecine column, contains name of all the medicines
+# Create medicine column, contains name of all the medicines
 medicine = rep(c(med,med), each = 1, times = c(table_to_vector))
 df = data.frame(cbind(nausea, medicine))
 ```
 
 While studying the outcome of the table below, we see that with xtabs we get a contingency table from the medicine and nausea factors.
-There are more people suffering from nausea with the medicine Chlorpromazine than with Pentobarbital.
+There are more people suffering from nausea with the medicine Pentobarbital(100mg and 150mg combined) than with Chlorpromazine
 ```{r}
 xtabs(~medicine+nausea)
 ```
@@ -376,5 +376,5 @@ plot(residuals(em_model),expenses_crime$employ)
 From the normal QQ-plot of the residuals it is evident that error is not normally distributed.
 
 ```{r}
-qqnorm(residuals(model))
+qqnorm(residuals(model));qqline(residuals(model))
 ```
