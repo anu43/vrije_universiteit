@@ -5,6 +5,194 @@ date: "3/15/2020"
 output: pdf_document
 ---
 
-```{r setup, fig.height=3, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.height = 4)
+options(show.signif.stars=FALSE, digits = 3)
 ```
+
+## Exercise 1
+
+```{r, echo=FALSE}
+fruitflies = read.table('data/fruitflies.txt', header = TRUE)
+```
+
+```{r, echo=TRUE}
+# Add loglongevity to the data-frame
+# Use it as a response variable (Y)
+fruitflies$loglongevity = log(fruitflies$longevity)
+```
+
+#### Section A
+```{r, echo=FALSE}
+# par(mfrow=c(2,2))
+boxplot(loglongevity~activity,data=fruitflies)
+
+# Plotting hist & qq-plot of each activity separately
+log_low = fruitflies[fruitflies$activity == 'low',]$loglongevity
+# hist(log_low)
+qqnorm(log_low, main = 'low activity'); qqline(log_low)
+
+log_iso = fruitflies[fruitflies$activity == 'isolated',]$loglongevity
+# hist(log_iso)
+qqnorm(log_iso, main = 'isolated activity'); qqline(log_iso)
+
+log_high = fruitflies[fruitflies$activity == 'high',]$loglongevity
+# hist(log_high)
+qqnorm(log_high, main = 'high activity'); qqline(log_high)
+
+# # Interaction Plots
+# attach(fruitflies)
+# par(mfrow=c(1,1))
+# interaction.plot(thorax, activity, loglongevity)
+```
+
+- From the boxplot, we can observe medians are not the same among activities and there is also an outlier both in high and low activity. From QQ-plots, we observed normality on low activity with 2 outliers, whereas isolated and high activities don't have normality.
+
+```{r, echo=FALSE}
+# Create model
+fruitflies$activity = as.factor(fruitflies$activity)
+lm_act=lm(loglongevity~activity,data=fruitflies)
+# Take residuals
+res = residuals(lm_act)
+
+# Shapiro test
+pfromshapiro = shapiro.test(res)[2]$p.value
+# ANOVA test
+anova(lm_act)
+# Summary Coefficients
+summary(lm_act)[4]
+```
+
+- We reject the null hypothesis of ANOVA test which means there is significant difference among groups and also we can observe the same outcome from the summary coefficient table. According to the estimations of longevity, it increases more when the sexual activity is isolated, then it follows as low and high. To find out the $\alpha$s;
+  - $\alpha_{high}$ = $\mu_{1}$ = 3.602,
+  - $\alpha_{isolated}$ = $\mu_{2}-\mu_{1}$ = 0.517 ==> $\mu_{2}$ = `r 3.602 + 0.517`,
+  - $\alpha_{low}$ = $\mu_{3}-\mu_{1}$ = 0.398 ==> $\mu_{3}$ = `r 3.602 + 0.398`
+
+```{r, echo=FALSE}
+par(mfrow=c(1, 2))
+# QQ-plot
+qqnorm(res)
+# Scatter plot
+plot(fitted(lm_act), res)
+```
+
+- QQ plot does not provide good results with regards to the normality. Shapiro - Wilk test also supplies the same outcome with `r pfromshapiro` value since we rejected null hypothesis $H_{0}$ (because it is lower than 0.05) which means residuals are not normally distributed and that is a sign which tells something wrong about our model, even though, we created our model with log of longevity (a transformation to longevity for the sake of the model beforehand).
+
+#### Section B
+
+```{r, echo=FALSE}
+# Create model
+thorax_avg = mean(fruitflies$thorax); thorax_avg
+fruitflies$thorax = as.factor(fruitflies$thorax)
+lm_act2=lm(loglongevity~thorax+activity,data=fruitflies)
+# Take residuals
+res2 = residuals(lm_act2)
+# Shapiro test
+pfromshapiro2 = shapiro.test(res2)[2]$p.value
+# ANOVA test
+anova(lm_act2)
+# Summary Coefficients
+summary(lm_act2)[4]
+```
+
+- According to the two-way ANOVA results, we observe that thorax ($\alpha_{i}$) and activity ($\beta_{j}$) have both main effects on longevity in the additive model since we rejected the null hypothesis.
+- From the summary coefficients, we observe that all activity factors increase longevity since all of them are positive.
+
+- We obtain thorax average as `r thorax_avg`
+
+```{r, echo=FALSE}
+fruit=data.frame(thorax=fruitflies$thorax,
+                 activity=fruitflies$activity,
+                 longevity=fruitflies$longevity,
+                 loglongevity=fruitflies$loglongevity)
+# Summary with sum contrast
+fruit$thorax = as.factor(fruit$thorax)
+fruit$activity = as.factor(fruit$activity)
+contrasts(fruit$thorax) = contr.sum
+contrasts(fruit$activity) = contr.sum
+# Create model
+fruit_contr_sum = lm(loglongevity~thorax+activity, data = fruit)
+anova(fruit_contr_sum)
+# Summary
+summary(fruit_contr_sum)[4]
+```
+
+- As contr.sum equals to zero, we calculated activity3 (high) as -(-0.2758 + 0.1865) = `r -(-0.2758 + 0.1865)`. So, to have the estimates for flies with average thorax, we move on with the values thorax9 = 0.3121 (for the average thorax length), and all activity factors.
+  - $Y_{isolated, thorax9}$ = 3.8026 + 0.3121 - 0.2758 = `r 3.8026 + 0.3121 - 0.2758`,
+  - $Y_{low, thorax9}$ = 3.8026 + 0.3121 + 0.1865 = `r 3.8026 + 0.3121 + 0.1865`,
+  - $Y_{high, thorax9}$ = 3.8026 + 0.3121 + `r -(-0.2758 + 0.1865)` = `r 3.8026 + 0.3121 - (-0.2758 + 0.1865)`
+
+#### Section C
+
+```{r, echo=FALSE}
+# Plotting
+fruitflies$thorax = as.numeric(fruitflies$thorax)
+plot(loglongevity~thorax, data=fruitflies[fruitflies$activity == 'high',], col ='red')
+points(loglongevity~thorax, data=fruitflies[fruitflies$activity == 'low',], col ='blue')
+points(loglongevity~thorax, data=fruitflies[fruitflies$activity == 'isolated',], col ='green')
+legend('topleft', legend = c('isolated', 'high', 'low'), fill = c('green', 'red', 'blue'))
+```
+
+- There is an increment in longevity as thorax length increases. Moreover, flies which were in isolated sexual activity seem to have the longer than the others. Additionally, it follows as low and isolated activity factors, respectively. But to be sure, we also obtain results from ANOVA additive model.
+
+```{r, echo=FALSE}
+# Testing
+# Creating model
+lm_tho = lm(loglongevity~thorax+activity, data = fruitflies)
+# ANOVA test
+anova(lm_tho)
+# Summary Coefficients
+summary(lm_tho)[4]
+```
+
+- According to the ANOVA test results, we reject null hypothesis for both activity and thorax which leads to the fact that they have significant effect upon longevity. Whereas we can't say we reject null hypothesis for the interaction between activity and thorax.
+  - $\alpha_1$ (high) = $\mu_{1}$ = 3.0762,
+  - $\alpha_2$ (isolated) = $\mu_{2}-\mu_{1}$ = 3.0762 + 0.4120 = `r 3.0762 + 0.4120`,
+  - $\alpha_3$ (low) = $\mu_{2}-\mu_{1}$ = 3.0762 + 0.2871 = `r 3.0762 + 0.2871`,
+  - When we look the the results the highest effect is supplied by low activity, then isolated and lastly high sexual condition.
+
+#### Section D
+
+- We would prefer without thorax parameter since there is no real interaction between activity and thorax. Moreover, as in the beginning of the question, it says that experimenters randomly chose the sexual activity upon flies will going to experience and most importantly, thorax is considered to be added later on which does not seem a reliable factor for this testing.
+
+#### Section E
+
+```{r, echo=FALSE}
+par(mfrow=c(1,2))
+qqnorm(residuals(fruit_contr_sum)); qqline(residuals(fruit_contr_sum))
+plot(fitted(fruit_contr_sum), residuals(fruit_contr_sum))
+```
+
+- The normality seems doubtful in QQ-plot and we did not observe heteroscedasticity in the scatter plot as they mostly are accumulated on the right side of the plot.
+
+```{r, echo=FALSE}
+library(lmtest)
+bptest(fruit_contr_sum)
+```
+
+- We also don't reject the null hypothesis of Breusch-Pagan test which is the error variances are all equal and that is a proof of non-heteroscedasticity among the model.
+
+#### Section F
+
+```{r, echo=FALSE}
+fruit$activity = as.factor(fruit$activity)
+act_fact_mod = lm(fruit$longevity~fruit$thorax+fruit$activity)
+drop1(act_fact_mod, type='F')
+```
+
+```{r, echo=FALSE}
+par(mfrow=c(1, 2))
+qqnorm(residuals(act_fact_mod), main = 'number of days'); qqline(residuals(act_fact_mod))
+qqnorm(residuals(lm_act2), main = 'log of number of days'); qqline(residuals(lm_act2))
+
+plot(fitted(act_fact_mod), residuals(act_fact_mod), main = 'number of days')
+plot(fitted(lm_act2), residuals(lm_act2), main = 'log of number of days')
+```
+
+- Normality is doubtful for both of the QQ-plots. But residuals of the number of days seem to be more normal distributed than the log of them.
+
+```{r, echo=FALSE}
+bptest(act_fact_mod); bptest(lm_act2)
+```
+
+- According to the Breush-Pagan tests for both numerical (first test) and log of longevity values (second test), we don't reject, and therefore, confirm non-heteroscedasticities for both of them. Since we have better QQ-plot and greater p-value from Breush-Pagan test, we conclude as the real numerical values for longevity is better than logarithmic for the model.
