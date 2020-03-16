@@ -1,10 +1,12 @@
+# R files
+*.RData
+*.Rhistory
+vrije_universiteit.Rproj
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-*.RData
-*.Rhistory
-vrije_universiteit.Rproj
 
 # C extensions
 *.so
