@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 *.RData
 *.Rhistory
-*.Rproj
+vrije_universiteit.Rproj
 
 # C extensions
 *.so
