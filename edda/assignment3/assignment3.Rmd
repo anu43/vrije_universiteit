@@ -25,6 +25,7 @@ fruitflies$loglongevity = log(fruitflies$longevity)
 #### Section A
 ```{r, echo=FALSE}
 # par(mfrow=c(2,2))
+par(mfrow=c(1, 2))
 boxplot(loglongevity~activity,data=fruitflies)
 
 # Plotting hist & qq-plot of each activity separately
@@ -325,32 +326,31 @@ shapiro.test(residuals(glm_milt))[[2]]
 b)
 In 'Step down' method, we start with all the variables and then reduce the number of variables in our model based on the p-value.
 ```{r}
-summary(glm(miltcoup~oligarchy+pollib+parties+pctvote+popn+size+numelec+numregim,family=poisson,data=africa))[[12]]
+summary(glm(miltcoup~oligarchy+pollib+parties+pctvote+popn+size+numelec+numregim,family=poisson,data=africa))$coefficients[,4]
 ```
 As the variable `numelec` has the highest p-value and it is > 0.05, we discard it for the next iteration.
 ```{r}
-summary(glm(miltcoup~oligarchy+pollib+parties+pctvote+popn+size+numregim,family=poisson,data=africa))[[12]]
+summary(glm(miltcoup~oligarchy+pollib+parties+pctvote+popn+size+numregim,family=poisson,data=africa))$coefficients[,4]
 ```
 In this iteration, variable `numregim` have the p-value > 0.05, thus we discard it for the next iteration.
 ```{r}
-summary(glm(miltcoup~oligarchy+pollib+parties+pctvote+popn+size,family=poisson,data=africa))[[12]]
+summary(glm(miltcoup~oligarchy+pollib+parties+pctvote+popn+size,family=poisson,data=africa))$coefficients[,4]
 ```
 In this iteration, variable `size` have the p-value > 0.05, thus we discard it for the next iteration.
 ```{r}
-summary(glm(miltcoup~oligarchy+pollib+parties+pctvote+popn,family=poisson,data=africa))[[12]]
+summary(glm(miltcoup~oligarchy+pollib+parties+pctvote+popn,family=poisson,data=africa))$coefficients[,4]
 ```
 In this iteration, variable `popn` have the p-value > 0.05, thus we discard it for the next iteration.
 ```{r}
-summary(glm(miltcoup~oligarchy+pollib+parties+pctvote,family=poisson,data=africa))[[12]]
+summary(glm(miltcoup~oligarchy+pollib+parties+pctvote,family=poisson,data=africa))$coefficients[,4]
 ```
 In this iteration, variable `pctvote` have the p-value > 0.05, thus we discard it for the next iteration.
 
 ```{r}
 #Final Model
 model_poisson = glm(miltcoup~oligarchy+pollib+parties,family=poisson,data=africa)
-summary(model_poisson)[[12]]
+summary(model_poisson)$coefficients[,4]
 par(mfrow=c(1, 2))
 plot(model_poisson, which = 1:2)
-
 ```
 In the final model obtained using 'Step Down' approach, `oligarchy`, `parties`, and `pollib2` turned out to be most important variables with p-values less than 5%. Also, as per the QQ plot, distribution is evidently normaly distributed with few outliers.
