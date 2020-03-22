@@ -316,9 +316,9 @@ We need to treat explanatory variable `pollib` as a factor variable as it repres
 ```{r}
 africa$pollib = as.factor(africa$pollib)
 glm_milt=glm(miltcoup~oligarchy+pollib+parties+pctvote+popn+size+numelec+numregim,family=poisson,data=africa) 
-summary(glm_milt)
+summary(glm_milt)[[12]]
 plot(glm_milt, which=2)
-shapiro.test(residuals(glm_milt))
+shapiro.test(residuals(glm_milt))[[2]]
 ```
 `oligarchy`, `parties`, and `pollib` variables are significant for the model as the p-values are less than 5%. As per the plot, `Liberia`, `Comoros`, and `Sudan` are the outliers in the data. Also, we reject the $H_0$ hypothesis of 'Shapiro test' and conclude the residuals of the model are not normally distributed, meaning that the model does not work well on the given dataset. 
 
