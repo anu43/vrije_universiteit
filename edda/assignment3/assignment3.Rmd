@@ -198,6 +198,114 @@ bptest(act_fact_mod); bptest(lm_act2)
 - According to the Breush-Pagan tests for both numerical (first test) and log of longevity values (second test), we don't reject, and therefore, confirm non-heteroscedasticities for both of them. Since we have better QQ-plot and greater p-value from Breush-Pagan test, we conclude as the real numerical values for longevity is better than logarithmic for the model.
 
 
+## Exercise 2
+
+```{r, echo=FALSE}
+psi = read.table(file = 'data/psi.txt', header=TRUE)
+```
+
+a)
+
+First, we load the data and check the normality of the GPA data.
+
+```{r, echo=FALSE}
+qqnorm(psi$gpa, main="Q-Q Plot: All Students' GPA")
+qqline(psi$gpa)
+```
+
+From the QQ-plot the normality can not be assumed from the plot, so we perform a Shapiro Test to make sure. The test outputs a p-value of `r shapiro.test(psi$gpa)[2]`, which means the GPA data is normally distributed.
+
+Then, we divide the dataset into two groups based on whether they received psi, to be able to study the data and give summaries.
+
+```{r, echo=TRUE}
+no_psi = psi[which(psi$psi == "0"),]
+yes_psi = psi[which(psi$psi == "1"),]
+```
+
+The splitted data can then be studied from the following boxplot.
+
+```{r, echo=FALSE}
+boxplot(psi$gpa, yes_psi$gpa, no_psi$gpa, main="GPA Boxplots", names=c("All", "PSI", "No PSI"));
+```
+
+We can see that the mean GPA of students with no psi is lower compared to the mean GPA of students with psi, but the latter has a higher variance.
+
+```{r, echo=FALSE}
+par(mfrow=c(1, 2))
+hist(no_psi$gpa, breaks = c(2.0, 2.5, 3.0, 3.5, 4.0), xlab = 'GPA', ylab = 'N of Students', main = 'Students that did not receive psi')
+hist(yes_psi$gpa, breaks = c(2.0, 2.5, 3.0, 3.5, 4.0), xlab = 'GPA', ylab = 'N of Students', main = 'Students that did receive psi')
+```
+
+From the boxplots it clearly shows that students that did receive psi are more lenient towards the higher end of the GPAs, for students without psi the data is more concentrated with GPAs around the 2.5 - 3.0 mark.
+
+b)
+
+Fitting a logistic regression model.
+
+```{r}
+psiglm=glm(passed~psi+gpa,data=psi,family=binomial)
+summary(psiglm)$coefficients
+
+plot(psiglm, which=2:2)
+```
+
+From the summary follows that the p-value for receiving psi equals `r summary(psiglm)$coefficients[12]` so we reject the $H_0$, concluding that receiving psi does work. Also, the parameter estimate of psi of $2.34$ shows that that if psi is received, the probability of passing is higher.
+From the graph it shows that the residuals seem quite normal, which shows that our model works well. It also show that points 24, 14 and 32 are outliers in the data set.
+
+c)
+
+From the summary of the previous question follow the following probabilities:
+
+A student with a GPA equal to 3 who receives psi
+
+- $-11.602 + 2.338 + (3.063 * 3.0) = -0.075$
+- Probability: $\frac{1}{1+e^{-(-0.075)}} =$ `r 1/(1+exp(0.075))`
+
+A student with a GPA equal to 3 who does not receives psi
+
+- $-11.602 + (3.063 * 3.0) = -2.408$
+- Probability: $\frac{1}{1 + e^{-(-2.408)}} =$ `r 1/(1+exp(2.408))`
+
+The probability of a student that receives psi passing the assigment is higher than the student with a same GPA who did not receive psi.
+
+d)
+
+From the same summary follow the following probabilities.
+
+A student that received psi:
+
+- $-11.602 + 2.34 = -9.26$
+- Probability: $\frac{1}{1 + e^{-(-9.26)}} =$ `r 1/(1 + exp(9.26))`
+
+A student that did not receive psi:
+
+- Probability: $\frac{1}{1 + e^{-(-11.602)}} =$ `r 1/(1+exp(11.602))`
+
+The relative change in odds is as follows:
+
+- `r 1/(1 + exp(9.26))` $-$ `r 1/(1+exp(11.602))`  $=$ `r 1/(1 + exp(9.26)) - 1/(1+exp(11.602))`
+
+This number means that a student's odds increase by `r 1/(1 + exp(9.26)) - 1/(1+exp(11.602))` to pass the assigment when receiving psi. This relative change is not dependent on GPA, because if we leave GPA out of the GLM function, the parameter estimate for psi - the number that is used in this calculation - does not change.
+
+e)
+
+```{r, echo=TRUE, results='hide'}
+x=matrix(c(3,15,8,6),2,2); fisher.test(x)
+```
+
+In the matrix x, the numbers 15 and 6 equal the number of students that did not show improvements while not receiving and receiving psi respectively. The conclusion is that the $H_0$ - that states that the probability of passing is the same for the two groups - is rejected due to the p-value of `r fisher.test(x)[1]`.
+
+f)
+
+Fisher's exact test is meant to compute an exact p-value for 2x2 tables. The test is mainly used for small sample sizes, which is also the case in our example. This, combined with the way the experiment was conducted, makes us believe that this approach is not wrong.
+
+g)
+
+The last approach could make use of Fisher's exact test, which produces an exact p-value, rather than an approximation that only becomes exact as the sample size grows to infinity, as with many other statistical tests, the one used in part b) of this question included.
+
+However, Fisher's test, in contrast to logistic regression, can only be used for relatively small sample sizes (i.e., small counts in the 2x2 table). Therefore it was not possible to conduct this test on the data acquired by the experiment with the first approach of this question.
+
+
 ## Exercise 3
 
 ```{r}
