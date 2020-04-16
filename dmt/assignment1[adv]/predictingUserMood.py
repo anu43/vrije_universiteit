@@ -25,7 +25,6 @@ d['time'] = pd.to_datetime(d['time'])
 # Create pivot table with index id & time
 d = d.pivot_table(index=['id', 'time'], columns='variable', values='value')
 # Rename columns
-# rename the columns
 d.rename(columns={
     'circumplex.arousal': 'arousal',
     'circumplex.valence': 'valence',
@@ -73,6 +72,7 @@ aggs = {
 
 # Apply aggregation
 daily = daily.agg(aggs)
+
 # Get rid of rows which does not have mood variable
 daily = daily[daily.mood.notnull()]
 
@@ -83,7 +83,7 @@ ids = levels[0]  # Index of id
 colId = daily.reset_index()['id'].to_numpy()  # List of column id
 idList = list()  # Empty list for ids
 
-# Iterate through ids
+# Iterate through ids to fill the missing values
 for id in ids:
     # Set frame to relevant user daily information
     dailyId = daily.loc[id]
@@ -109,7 +109,8 @@ for column in newColumns:
 # Refresh idList
 idList = list()
 
-# Iterate through ids
+# Iterate through ids to fill the newColumns
+# according to the previous 5 days
 for id in ids:
     # Set frame to relevant user daily information
     dailyId = daily.loc[id]
@@ -118,11 +119,13 @@ for id in ids:
         # Apply roller to the related column
         dailyId[col] = dailyId[lookupColumns[index]].rolling('5D',
                                                              min_periods=5).mean()
+    # Append frame to the idList
     idList.append(dailyId)
 
 # Concat ids again into one frame
 daily = pd.concat(idList)
 # Drop NaN rows from avgColumns
+# values from the beginning of rolling
 daily.dropna(inplace=True)
 
 # Sort frame according to time
