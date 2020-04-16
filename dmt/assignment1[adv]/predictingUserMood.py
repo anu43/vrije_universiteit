@@ -32,15 +32,15 @@ d.rename(columns={
     'appCat.builtin': 'builtin',
     'appCat.communication': 'communication',
     'appCat.entertainment': 'entertainment',
-    'appCat.finance':'finance',
-    'appCat.game':'game',
-    'appCat.office':'office',
-    'appCat.other':'other',
-    'appCat.social':'social',
-    'appCat.travel':'travel',
-    'appCat.unknown':'unknown',
-    'appCat.utilities':'utilities',
-    'appCat.weather':'weather'}, inplace=True)
+    'appCat.finance': 'finance',
+    'appCat.game': 'game',
+    'appCat.office': 'office',
+    'appCat.other': 'other',
+    'appCat.social': 'social',
+    'appCat.travel': 'travel',
+    'appCat.unknown': 'unknown',
+    'appCat.utilities': 'utilities',
+    'appCat.weather': 'weather'}, inplace=True)
 
 # Set another frame for daily tracking
 daily = d.reset_index().set_index('time').groupby('id').resample('D')
@@ -50,26 +50,26 @@ del d
 
 # Define aggregation dict
 aggs = {
-        'mood': 'mean',
-        'arousal': 'mean',
-        'valence': 'mean',
-        'activity': 'mean',
-        'screen': 'sum',
-        'call': 'sum',
-        'sms': 'sum',
-        'builtin': 'sum',
-        'communication': 'sum',
-        'entertainment': 'sum',
-        'finance': 'sum',
-        'game': 'sum',
-        'office': 'sum',
-        'other': 'sum',
-        'social': 'sum',
-        'travel': 'sum',
-        'unknown': 'sum',
-        'utilities': 'sum',
-        'weather': 'sum'
-    }
+    'mood': 'mean',
+    'arousal': 'mean',
+    'valence': 'mean',
+    'activity': 'mean',
+    'screen': 'sum',
+    'call': 'sum',
+    'sms': 'sum',
+    'builtin': 'sum',
+    'communication': 'sum',
+    'entertainment': 'sum',
+    'finance': 'sum',
+    'game': 'sum',
+    'office': 'sum',
+    'other': 'sum',
+    'social': 'sum',
+    'travel': 'sum',
+    'unknown': 'sum',
+    'utilities': 'sum',
+    'weather': 'sum'
+}
 
 # Apply aggregation
 daily = daily.agg(aggs)
@@ -79,9 +79,9 @@ daily = daily[daily.mood.notnull()]
 # For filling missing values with regards to its user
 # set variables & empty lists
 levels = daily.index.levels
-ids = levels[0] # Index of id
-colId = daily.reset_index()['id'].to_numpy() # List of column id
-idList = list() # Empty list for ids
+ids = levels[0]  # Index of id
+colId = daily.reset_index()['id'].to_numpy()  # List of column id
+idList = list()  # Empty list for ids
 
 # Iterate through ids
 for id in ids:
@@ -103,7 +103,8 @@ newColumns = ['avgValence', 'avgActivity', 'avgArousal', 'avgScreen']
 # Set lookup columns for newColumns
 lookupColumns = ['valence', 'activity', 'arousal', 'screen']
 # Put them into the frame
-for column in newColumns: daily[column] = np.nan
+for column in newColumns:
+    daily[column] = np.nan
 
 # Refresh idList
 idList = list()
@@ -132,7 +133,7 @@ daily = daily.reset_index().drop(['time'], axis=1)
 # ------------------- FEATURE SELECTION -------------------
 # Split the data by independent and dependent columns
 X = daily.loc[:, daily.columns != 'mood']  # independent columns
-y = daily.loc[:, 'mood'] # target column
+y = daily.loc[:, 'mood']  # target column
 
 # Create LabelEncoder to be able to fit the model later
 lab_enc = preprocessing.LabelEncoder()
@@ -142,10 +143,10 @@ y = lab_enc.fit_transform(y)
 # Create model
 model = ExtraTreesClassifier()
 # Fit the model
-model.fit(X,y)
+model.fit(X, y)
 
 # Print the importance of features
-print(model.feature_importances_) # use inbuilt class feature_importances of tree based classifiers
+print(model.feature_importances_)  # use inbuilt class feature_importances of tree based classifiers
 # Plot graph of feature importances for better visualization
 feat_importances = pd.Series(model.feature_importances_, index=X.columns)
 feat_importances.nlargest(10).plot(kind='barh')
