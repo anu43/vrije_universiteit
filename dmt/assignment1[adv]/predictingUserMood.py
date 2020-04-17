@@ -15,6 +15,7 @@ import pandas as pd
 import numpy as np
 
 
+# ------------------- PREVIOUS OPERATIONS -------------------
 # Import dataset
 d = pd.read_csv('./data/dataset_mood_smartphone.csv')
 # Drop column 'Unnamed: 0'
@@ -75,6 +76,13 @@ daily = daily.agg(aggs)
 
 # Get rid of rows which does not have mood variable
 daily = daily[daily.mood.notnull()]
+# ------------------- PREVIOUS OPERATIONS -------------------
+
+# ------------------- FILLING MISSING VALUES -------------------
+# Import aggregated data
+daily = pd.read_csv('./data/agg.csv')
+# Set indexes as id and time
+daily = daily.set_index(['id', 'time'])
 
 # For filling missing values with regards to its user
 # set variables & empty lists
@@ -87,17 +95,25 @@ idList = list()  # Empty list for ids
 for id in ids:
     # Set frame to relevant user daily information
     dailyId = daily.loc[id]
-    # Fill activity column by the mean
-    dailyId = dailyId.fillna(dailyId.activity.mean())
+    # Set a dictionary to pass it into fillna method
+    values = {
+            'arousal': dailyId.arousal.mean(),
+            'valence': dailyId.valence.mean(),
+            'activity': dailyId.activity.mean()
+        }
+    # Fill columns by the mean
+    dailyId = dailyId.fillna(value=values)
     # Append frame to the id list
     idList.append(dailyId)
-
+    
 # Concat ids again into one frame
 daily = pd.concat(idList)
 # Add id column back
 daily.insert(loc=0, column='id', value=colId)
 # Set index as id and time
 daily = daily.reset_index().set_index(['id', 'time'])
+# ------------------- FILLING MISSING VALUES -------------------
+
 # Set new columns
 newColumns = ['avgValence', 'avgActivity', 'avgArousal', 'avgScreen']
 # Set lookup columns for newColumns
