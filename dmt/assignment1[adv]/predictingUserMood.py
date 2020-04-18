@@ -114,40 +114,47 @@ daily.insert(loc=0, column='id', value=colId)
 daily = daily.reset_index().set_index(['id', 'time'])
 # ------------------- FILLING MISSING VALUES -------------------
 
-# Set new columns
-newColumns = ['avgValence', 'avgActivity', 'avgArousal', 'avgScreen']
+# ------------------- ADDING NEW FEATURES -------------------
+# Import aggregated and filled missing values data
+daily = pd.read_csv('./data/aggFilled.csv')
+# Set time as index
+daily = daily.set_index('time')
+
+# Add sum of entertainment, social, and game to new column
+daily['sumOfEntSocGa'] = daily['entertainment'] + daily['social'] + daily['game']
+# Add sum of call and sms to new column
+daily['sumofCallSMS'] = daily['call'] + daily['sms']
+# Add binary column to indicate whether it is a weekday or weekend
+daily['weekday'] = ((pd.DatetimeIndex(daily.index).dayofweek) // 5 == 1).astype(int)
+# Add previous day of mood
+daily['prevMood'] = daily.mood.shift(1)
+
+# Set new columns for average from past days
+newColumns = ['avgMood', 'avgValence', 'avgActivity', 'avgArousal',
+              'avgScreen', 'avgAppSum', 'avgCallSMS']
 # Set lookup columns for newColumns
-lookupColumns = ['valence', 'activity', 'arousal', 'screen']
+lookupColumns = ['mood', 'valence', 'activity', 'arousal',
+                 'screen', 'sumOfEntSocGa', 'sumofCallSMS']
 # Put them into the frame
 for column in newColumns:
     daily[column] = np.nan
 
-# Refresh idList
-idList = list()
-
-# Iterate through ids to fill the newColumns
-# according to the previous 5 days
+# Set ids list
+ids = daily.id_label.unique()
+# Iterate through newColumns to fill them
+# according to the previous 3 & 5 days
+# Roll over the frame to fill the newColumns
+for index, col in enumerate(newColumns):
+    # Apply roller to the related column
+    daily[col] = daily[lookupColumns[index]].rolling(5).mean()
+    
+# Delete the first 5 rows of each user
 for id in ids:
-    # Set frame to relevant user daily information
-    dailyId = daily.loc[id]
-    # Roll over the frame to fill the newColumns
-    for index, col in enumerate(newColumns):
-        # Apply roller to the related column
-        dailyId[col] = dailyId[lookupColumns[index]].rolling('5D',
-                                                             min_periods=5).mean()
-    # Append frame to the idList
-    idList.append(dailyId)
-
-# Concat ids again into one frame
-daily = pd.concat(idList)
-# Drop NaN rows from avgColumns
-# values from the beginning of rolling
-daily.dropna(inplace=True)
-
-# Sort frame according to time
-daily = daily.sort_values(by='time')
-# Drop the time column
-daily = daily.reset_index().drop(['time'], axis=1)
+    daily[daily['id_label'] == id] = daily[daily['id_label'] == id].iloc[5:]
+    
+# Drop NaN columns
+daily = daily.dropna()
+# ------------------- ADDING NEW FEATURES -------------------
 
 # ------------------- FEATURE SELECTION -------------------
 # Split the data by independent and dependent columns
