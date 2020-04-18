@@ -125,7 +125,7 @@ daily['sumOfEntSocGa'] = daily['entertainment'] + daily['social'] + daily['game'
 # Add sum of call and sms to new column
 daily['sumofCallSMS'] = daily['call'] + daily['sms']
 # Add binary column to indicate whether it is a weekday or weekend
-daily['weekday'] = ((pd.DatetimeIndex(daily.index).dayofweek) // 5 == 1).astype(int)
+daily['weekend'] = ((pd.DatetimeIndex(daily.index).dayofweek) // 5 == 1).astype(int)
 # Add previous day of mood
 daily['prevMood'] = daily.mood.shift(1)
 
