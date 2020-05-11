@@ -262,29 +262,7 @@ dropCols.append([
 # Flatten the list
 dropCols = flatten(dropCols)
 # Drop the columns in dropCols list
-df = df.drop(['date_time',
-              'price_usd',
-              'srch_length_of_stay',
-              'srch_adults_count',
-              'srch_children_count',
-              'comp1_rate',
-              'comp1_inv',
-              'comp1_rate_percent_diff',
-              'comp2_rate_percent_diff',
-              'comp3_rate_percent_diff',
-              'comp4_rate',
-              'comp4_inv',
-              'comp4_rate_percent_diff',
-              'comp5_rate_percent_diff',
-              'comp6_rate',
-              'comp6_inv',
-              'comp6_rate_percent_diff',
-              'comp7_rate',
-              'comp7_inv',
-              'comp7_rate_percent_diff',
-              'comp8_rate_percent_diff',
-              'gross_bookings_usd'
-              ], axis=1)
+df = df.drop(dropCols, axis=1)
 
 # Generate correlation matrix
 corr = df.corr()
