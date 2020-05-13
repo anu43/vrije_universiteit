@@ -1,10 +1,10 @@
-import lgbm as lgb
+import lightgbm as lgb
 import numpy as np
 import pandas as pd
 from time import time
 
 # Import training data
-train = pd.read_csv('../../../../data/training.csv')
+train = pd.read_csv('../../../../data/training.csv', nrows=50000)
 
 # Prepare X and y
 target = 'target'  # Set column name for y
