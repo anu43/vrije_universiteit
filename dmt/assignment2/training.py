@@ -3,8 +3,9 @@ import numpy as np
 import pandas as pd
 from time import time
 
-# Import training data
-train = pd.read_csv('../../../../data/training.csv', nrows=50000)
+# Import training/test sets
+train = pd.read_csv('../../../../data/training.csv', nrows=10000)
+test = pd.read_csv('../../../../data/test.csv', nrows=10000)
 
 # Prepare X and y
 target = 'target'  # Set column name for y
@@ -25,4 +26,11 @@ ranker.fit(X, y, group=[X_train.shape[0]])
 # Set stop time
 stop = time()
 # Print training time
-print('duration', stop - start)
+print('training time', (stop - start) / 60, 'mins')
+
+# Create X_test
+X_test = np.array(test.values, test.columns)
+# Predict
+test_pred = ranker.predict(X_test)
+# Put the predictions to the test frame
+test["ranking_rates"] = test_pred
