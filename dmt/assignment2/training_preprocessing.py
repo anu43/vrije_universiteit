@@ -90,7 +90,7 @@ def target_col(row):
 train = pd.read_csv('../../../../data/eval_training_set.csv')
 
 # Import test data
-test = pd.read_csv('../../../../data/test_set_VU_DM.csv')
+test = pd.read_csv('../../../../data/eval_test_set.csv')
 
 # Copy datasets
 # train, test = df_train.copy(), df_test.copy()
