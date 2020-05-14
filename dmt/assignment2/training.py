@@ -4,8 +4,8 @@ import pandas as pd
 from time import time
 
 # Import training/test sets
-train = pd.read_csv('../data/training.csv')
-test = pd.read_csv('../data/test.csv')
+train = pd.read_csv('../../../../data/training.csv')
+test = pd.read_csv('../../../../data/test.csv')
 # Prepare X and y
 target = 'target'  # Set column name for y
 # Receive all columns except target column for X
@@ -35,4 +35,4 @@ test_pred = ranker.predict(X_test)
 test["ranking_rates"] = test_pred
 
 # Write the result to csv
-test.to_csv('../data/predicted_test.csv', index=False)
+test.to_csv('../../../../data/predicted_test.csv', index=False)
