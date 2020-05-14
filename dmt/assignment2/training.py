@@ -22,7 +22,7 @@ ranker = lgb.LGBMRanker()
 # Set start time
 start = time()
 # Train data
-ranker.fit(X, y, group=[X_train.shape[0]])
+ranker.fit(X, y, group=[X_train.shape[0]], early_stopping_rounds=50)
 # Set stop time
 stop = time()
 # Print training time
