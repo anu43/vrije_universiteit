@@ -34,5 +34,5 @@ test_pred = ranker.predict(X_test)
 # Put the predictions to the test frame
 test["ranking_rates"] = test_pred
 
-# Right the result to csv
+# Write the result to csv
 test.to_csv('../data/predicted_test.csv', index=False)
