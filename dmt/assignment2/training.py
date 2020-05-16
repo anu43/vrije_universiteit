@@ -7,11 +7,9 @@ from sklearn.model_selection import train_test_split
 
 
 categoricalCols = [
-    'srch_id', 'site_id', 'visitor_location_country_id',
-    'prop_country_id', 'prop_id', 'prop_brand_bool',
-    'promotion_flag', 'srch_destination_id',
-    'random_bool', 'with_family', 'is_Fall',
-    'is_Spring', 'is_Summer', 'is_Winter'
+    'site_id', 'visitor_location_country_id',
+    'prop_country_id', 'prop_id','promotion_flag',
+    'srch_destination_id'
 ]
 
 
@@ -35,7 +33,12 @@ def set_types(train, test):
         'prop_brand_bool',
         'promotion_flag',
         'srch_saturday_night_bool',
-        'random_bool'
+        'random_bool',
+        'with_family',
+        'is_Fall',
+        'is_Spring',
+        'is_Summer',
+        'is_Winter'
     ]
     # Change categorical columns' type
     train[boolVars] = train[boolVars].astype('bool')
@@ -108,41 +111,42 @@ def train_lgbm_model(train, test):
 
     '''
 
-    # Prepare X and y
-    target = 'target'  # Set column name for y
-    # Receive all columns except target column for X
-    X_train = train.loc[:, train.columns != target]
-    # Get the target column only
-    y_train = train.loc[:, target]
+    # Split and prepare groups of train/val sets
+    X_train, y_train, X_val, y_val, groups_train, groups_val = prepareSets4XGBRanker(train)
 
-    # Split training data as training and validation
-    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train,
-                                                      test_size=0.2,
-                                                      random_state=43)
+    # Sort test data by id
+    test.sort_values('srch_id', inplace=True)
+    # Drop srch_id from test set
+    X_test = test.drop('srch_id', axis=1)
 
-    # Set the queries for LGBM
-    query_train = [X_train.shape[0]]
-    query_val = [X_val.shape[0]]
-
-    # Create LGBMRanker model
     ranker = lgb.LGBMRanker()
+
     # Set start time
     start = time()
-    # Train data
-    ranker.fit(X_train, y_train, group=query_train,
-               eval_set=[(X_val, y_val)], eval_group=[query_val],
-               eval_at=[5, 10, 20], early_stopping_rounds=50,
-               verbose=False)
+    # Fit the model
+    print('started training')
+    ranker.fit(X_train, y_train, group=groups_train,
+               eval_set=[(X_val, y_val)], eval_group=[groups_val],
+               early_stopping_rounds=50, feature_name=X_train.columns.to_list(),
+               categorical_feature=categoricalCols, verbose=False)
     # Set stop time
     stop = time()
     # Print training time
     print('LGBM training time', (stop - start) / 60, 'mins')
-    # Create X_test for testing
-    X_test = np.array(test.values, test.columns)
+
+    # Reindex columns for prediction
+    # cols = list(ranker.feature_name_)
+    # X_test = test.reindex(cols, axis=1)
     # Predict
-    test_pred = ranker.predict(X_test)
+    print('predicting')
+    preds = ranker.predict(X_test)
     # Put the predictions to the test frame
-    test["ranking_rates"] = test_pred
+    test["ranking_rates"] = preds
+    # Sort values by first 'srch_id', then 'ranking_rates'
+    test.sort_values(['srch_id', 'ranking_rates'],
+                     ascending=[True, False],
+                     inplace=True)
+    print('done predicting')
 
     # Return test set with results
     return test
