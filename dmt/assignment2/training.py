@@ -6,13 +6,6 @@ from time import time
 from sklearn.model_selection import train_test_split
 
 
-categoricalCols = [
-    'site_id', 'visitor_location_country_id',
-    'prop_country_id', 'prop_id','promotion_flag',
-    'srch_destination_id'
-]
-
-
 def extract_groups(df) -> list:
 
     # Define an empty list for groups
@@ -110,7 +103,13 @@ def train_lgbm_model(train, test):
         Test dataset with ranking_rates column.
 
     '''
-
+    
+    categoricalCols = [
+    'site_id', 'visitor_location_country_id',
+    'prop_country_id', 'prop_id','promotion_flag',
+    'srch_destination_id'
+    ]
+    
     # Split and prepare groups of train/val sets
     X_train, y_train, X_val, y_val, groups_train, groups_val = prepareSets4XGBRanker(train)
 
