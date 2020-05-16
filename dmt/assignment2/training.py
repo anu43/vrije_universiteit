@@ -64,6 +64,10 @@ def prepareSets4XGBRanker(train):
     X_train.sort_values(by='srch_id', inplace=True)
     X_val.sort_values(by='srch_id', inplace=True)
     
+    # Drop 'srch_id' from training/validation sets
+    X_train.drop('srch_id', axis=1, inplace=True)
+    X_val.drop('srch_id', axis=1, inplace=True)
+    
     # Set the queries for LGBM
     print('extracting training groups')
     # Set start time
@@ -232,6 +236,11 @@ def train_xgbRanker_model(train, test, X_train, y_train, X_val,
         'max_depth': 10,
         'n_estimators': 10
     }
+    
+    # Sort test data by id
+    test.sort_values('srch_id', inplace=True)
+    # Drop srch_id from test set
+    test.drop('srch_id', axis=1, inplace=True)
 
     ranker = xgb.sklearn.XGBRanker(**params)
 
