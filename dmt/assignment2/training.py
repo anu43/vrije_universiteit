@@ -16,36 +16,36 @@ categoricalCols = [
 
 
 def extract_groups(df) -> list:
-    
+
     # Define an empty list for groups
     groups = list()
-    
+
     # Iterate through ids in train set
     for id_ in df.srch_id.unique():
         # Append the length of the specific id to the groups list
         groups.append(len(df[df.srch_id == id_]))
-    
+
     return groups
 
 
 def set_types(train, test):
-    
+
     # Define bool variables
     boolVars = [
-            'prop_brand_bool',
-            'promotion_flag',
-            'srch_saturday_night_bool',
-            'random_bool'
-        ]
+        'prop_brand_bool',
+        'promotion_flag',
+        'srch_saturday_night_bool',
+        'random_bool'
+    ]
     # Change categorical columns' type
     train[boolVars] = train[boolVars].astype('bool')
     test[boolVars] = test[boolVars].astype('bool')
-    
+
     return train, test
 
 
 def prepareSets4XGBRanker(train):
-    
+
     # Prepare X and y
     target = 'target'  # Set column name for y
     # Receive all columns except target column for X
@@ -58,16 +58,14 @@ def prepareSets4XGBRanker(train):
     X_train, X_val, y_train, y_val = train_test_split(X_train, y_train,
                                                       test_size=0.2,
                                                       random_state=43)
-    
+
     # Sort training/validation sets
     print('sorting training/validation sets')
-    X_train.sort_values(by='srch_id', inplace=True)
-    X_val.sort_values(by='srch_id', inplace=True)
-    
-    # Drop 'srch_id' from training/validation sets
-    X_train.drop('srch_id', axis=1, inplace=True)
-    X_val.drop('srch_id', axis=1, inplace=True)
-    
+    X_train.sort_values('srch_id', inplace=True)
+    y_train = y_train.reindex(X_train.index)
+    X_val.sort_values('srch_id', inplace=True)
+    y_val = y_val.reindex(X_val.index)
+
     # Set the queries for LGBM
     print('extracting training groups')
     # Set start time
@@ -83,7 +81,11 @@ def prepareSets4XGBRanker(train):
     # Set stop time
     stop = time()
     print('extracting validation groups took', (stop - start) / 60, 'mins')
-    
+
+    # Drop 'srch_id' from training/validation sets
+    X_train.drop('srch_id', axis=1, inplace=True)
+    X_val.drop('srch_id', axis=1, inplace=True)
+
     return X_train, y_train, X_val, y_val, groups_train, groups_val
 
 
@@ -199,17 +201,16 @@ def train_xgboost_model(train, test):
     test = test.reindex(cols, axis=1)
     dtest = xgb.DMatrix(test)
     preds = xg.predict(dtest)
-    test["ranking_rates"] = preds
-    test.sort_values(['srch_id', 'ranking_rates'],
-                     ascending=[True, False],
-                     inplace=True)
+    test['ranking_rates'] = preds
+    # test.sort_values(['srch_id', 'ranking_rates'],
+    #                  ascending=[True, False],
+    #                  inplace=True)
 
     # Return test set with results
     return test
 
 
-def train_xgbRanker_model(train, test, X_train, y_train, X_val,
-                          y_val, groups_train, groups_val):
+def train_xgbRanker_model(train, test):
     '''
     Returns the tested dataset after the training
     Ranking results are in the column called ranking_rates
@@ -227,6 +228,10 @@ def train_xgbRanker_model(train, test, X_train, y_train, X_val,
         Test dataset with ranking_rates column.
 
     '''
+
+    # Split and prepare groups of train/val sets
+    X_train, y_train, X_val, y_val, groups_train, groups_val = prepareSets4XGBRanker(train)
+
     params = {
         'objective': 'rank:ndcg',
         'eval_metric': 'ndcg',
@@ -236,11 +241,11 @@ def train_xgbRanker_model(train, test, X_train, y_train, X_val,
         'max_depth': 10,
         'n_estimators': 10
     }
-    
+
     # Sort test data by id
     test.sort_values('srch_id', inplace=True)
     # Drop srch_id from test set
-    test.drop('srch_id', axis=1, inplace=True)
+    X_test = test.drop('srch_id', axis=1)
 
     ranker = xgb.sklearn.XGBRanker(**params)
 
@@ -249,7 +254,7 @@ def train_xgbRanker_model(train, test, X_train, y_train, X_val,
     # Fit the model
     print('started training')
     ranker.fit(X_train, y_train, group=groups_train,
-               eval_set=[(X_val, y_val)], eval_group=groups_val,
+               eval_set=[(X_val, y_val)], eval_group=[groups_val],
                early_stopping_rounds=50, verbose=False)
     # Set stop time
     stop = time()
@@ -258,27 +263,28 @@ def train_xgbRanker_model(train, test, X_train, y_train, X_val,
 
     # Reindex columns for prediction
     cols = list(ranker.get_booster().feature_names)
-    test = test.reindex(cols, axis=1)
+    X_test = test.reindex(cols, axis=1)
     # Predict
     print('predicting')
-    preds = ranker.predict(test)
+    preds = ranker.predict(X_test)
     # Put the predictions to the test frame
     test["ranking_rates"] = preds
+    # Sort values by first 'srch_id', then 'ranking_rates'
+    test.sort_values(['srch_id', 'ranking_rates'],
+                     ascending=[True, False],
+                     inplace=True)
     print('done predicting')
-    
+
     # Return test set with results
     return test
 
 
 # Import training/test sets
-train = pd.read_csv('../../../../data/training.csv', nrows=10000)
-test = pd.read_csv('../../../../data/test.csv', nrows=10000)
+train = pd.read_csv('../../../../data/training.csv')
+test = pd.read_csv('../../../../data/test.csv')
 
 # Set types of train/test
 train, test = set_types(train, test)
-
-# Split and prepare groups of train/val sets
-X_train, y_train, X_val, y_val, groups_train, groups_val = prepareSets4XGBRanker(train)
 
 # Train LGBM model
 test = train_lgbm_model(train, test)
