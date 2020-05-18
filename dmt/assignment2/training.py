@@ -2,7 +2,30 @@ import lightgbm as lgb
 import xgboost as xgb
 import pandas as pd
 from time import time
+from datetime import datetime
 from sklearn.model_selection import train_test_split
+
+
+def closestNumber(n, m) : 
+    
+    # Find the quotient 
+    q = int(n / m) 
+      
+    # 1st possible closest number 
+    n1 = m * q 
+      
+    # 2nd possible closest number 
+    if((n * m) > 0) : 
+        n2 = (m * (q + 1))  
+    else : 
+        n2 = (m * (q - 1)) 
+      
+    # if true, then n1 is the required closest number 
+    if (abs(n - n1) < abs(n - n2)) : 
+        return n1 
+      
+    # else n2 is the required closest number  
+    return n2
 
 
 def extract_groups(df) -> list:
@@ -10,14 +33,17 @@ def extract_groups(df) -> list:
     # Define an empty list for groups
     groups = list()
     
+    # Set ids from 'srch_id'
     ids = df.srch_id.unique()
+    # Define the length of ids
     lenID = len(ids)
     
-    if lenID % 2 != 0:
-        lenID += 1
+    # Return the same or closest length that is divisible by 4
+    lenID = closestNumber(lenID, 4)
 
     # Iterate through ids in train set
     for i, id_ in enumerate(ids):
+        # Print the progress in percentage
         if i == lenID / 4:
             print('25%')
         elif i == lenID / 2:
