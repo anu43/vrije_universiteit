@@ -359,8 +359,8 @@ def train_xgbRanker_model(train, test, with_val=False):
 
 
 # Import training/test sets
-train = pd.read_csv('../../../../data/training.csv')
-test = pd.read_csv('../../../../data/test.csv')
+train = pd.read_csv('../../../../data/4trainingTesting/training.csv')
+test = pd.read_csv('../../../../data/4trainingTesting/test.csv')
 
 # Set types of train/test
 train, test = set_types(train, test)
