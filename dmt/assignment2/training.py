@@ -212,7 +212,7 @@ def train_xgboost_model(train, test):
     return test
 
 
-def train_xgbRanker_model(train, test):
+def train_xgbRanker_model(train, test, with_val=False):
     '''
     Returns the tested dataset after the training
     Ranking results are in the column called ranking_rates
@@ -223,6 +223,8 @@ def train_xgbRanker_model(train, test):
         Train dataset.
     test : Pandas' DataFrame object
         Test dataset.
+    with_val: Bool
+        Indicator to whether train with/out validation set
 
     Returns
     -------
@@ -230,12 +232,10 @@ def train_xgbRanker_model(train, test):
         Test dataset with ranking_rates column.
 
     '''
-
-    # Split and prepare groups of train/val sets
-    X_train, y_train, X_val, y_val, groups_train, groups_val = prepareSets4XGBRanker(train)
-
+    
+    # Define parameters for XGBRanker model
     params = {
-        'objective': 'rank:ndcg',
+        'objective': 'rank:pairwise',
         'eval_metric': 'ndcg',
         'learning_rate': 0.1,
         'gamma': 1.0,
@@ -243,26 +243,64 @@ def train_xgbRanker_model(train, test):
         'max_depth': 10,
         'n_estimators': 10
     }
+    
+    # Create the XGBRanker model
+    ranker = xgb.sklearn.XGBRanker(**params)
+    
+    # If the training would be with validation set
+    if with_val:
+        # Split and prepare groups of train/val sets
+        X_train, y_train, X_val, y_val, groups_train, groups_val = prepareSets4XGBRanker(train)
+
+        # Set start time
+        start = time()
+        # Fit the model
+        print('started training')
+        ranker.fit(X_train, y_train, group=groups_train,
+                   eval_set=[(X_val, y_val)], eval_group=[groups_val],
+                   early_stopping_rounds=50, verbose=False)
+        # Set stop time
+        stop = time()
+        # Print training time
+        print('XGB Ranker training time', (stop - start) / 60, 'mins')
+        
+    else:
+        # Prepare X_train and y_train
+        target = 'target'  # Set column name for y
+        # Receive all columns except target column for X
+        X_train = train.loc[:, train.columns != target]
+        # Get the target column only
+        y_train = train.loc[:, target]  
+        
+        # Set the grouping for training set
+        print('extracting training groups')
+        # Set start time
+        start = time()
+        groups_train = extract_groups(X_train)
+        # Set stop time
+        stop = time()
+        print('extracting training groups took', (stop - start) / 60, 'mins')
+        
+        # Drop 'srch_id' from training set
+        X = X_train.drop('srch_id', axis=1)
+        
+        # Set start time
+        start = time()
+        # Fit the model
+        print('started training')
+        ranker.fit(X, y_train, group=groups_train, verbose=False)
+        # Set stop time
+        stop = time()
+        # Print training time
+        print('XGB Ranker training time', (stop - start) / 60, 'mins')        
+        
 
     # Sort test data by id
-    test.sort_values('srch_id', inplace=True)
+    # test.sort_values('srch_id', inplace=True)
+    
     # Drop srch_id from test set
     X_test = test.drop('srch_id', axis=1)
-
-    ranker = xgb.sklearn.XGBRanker(**params)
-
-    # Set start time
-    start = time()
-    # Fit the model
-    print('started training')
-    ranker.fit(X_train, y_train, group=groups_train,
-               eval_set=[(X_val, y_val)], eval_group=[groups_val],
-               early_stopping_rounds=50, verbose=False)
-    # Set stop time
-    stop = time()
-    # Print training time
-    print('XGB Ranker training time', (stop - start) / 60, 'mins')
-
+    
     # Reindex columns for prediction
     cols = list(ranker.get_booster().feature_names)
     X_test = test.reindex(cols, axis=1)
