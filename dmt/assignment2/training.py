@@ -9,9 +9,22 @@ def extract_groups(df) -> list:
 
     # Define an empty list for groups
     groups = list()
+    
+    ids = df.srch_id.unique()
+    lenID = len(ids)
+    
+    if lenID % 2 != 0:
+        lenID += 1
 
     # Iterate through ids in train set
-    for id_ in df.srch_id.unique():
+    for i, id_ in enumerate(ids):
+        if i == lenID / 4:
+            print('25%')
+        elif i == lenID / 2:
+            print('50%')
+        elif i == 3 * lenID / 4:
+            print('75%')
+        
         # Append the length of the specific id to the groups list
         groups.append(len(df[df.srch_id == id_]))
 
@@ -320,8 +333,8 @@ def train_xgbRanker_model(train, test, with_val=False):
 
 
 # Import training/test sets
-train = pd.read_csv('../../../../data/training.csv')
-test = pd.read_csv('../../../../data/test.csv')
+train = pd.read_csv('../../../../data/training.csv', nrows=10000)
+test = pd.read_csv('../../../../data/test.csv', nrows=10000)
 
 # Set types of train/test
 train, test = set_types(train, test)
