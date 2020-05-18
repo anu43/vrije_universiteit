@@ -45,11 +45,11 @@ def extract_groups(df) -> list:
     for i, id_ in enumerate(ids):
         # Print the progress in percentage
         if i == lenID / 4:
-            print('25%')
+            print('25% at:', datetime.now().time())
         elif i == lenID / 2:
-            print('50%')
+            print('50% at:', datetime.now().time())
         elif i == 3 * lenID / 4:
-            print('75%')
+            print('75% at:', datetime.now().time())
         
         # Append the length of the specific id to the groups list
         groups.append(len(df[df.srch_id == id_]))
@@ -312,7 +312,7 @@ def train_xgbRanker_model(train, test, with_val=False):
         y_train = train.loc[:, target]  
         
         # Set the grouping for training set
-        print('extracting training groups')
+        print('extracting training groups at:', datetime.now().time())
         # Set start time
         start = time()
         groups_train = extract_groups(X_train)
