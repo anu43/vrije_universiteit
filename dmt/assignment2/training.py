@@ -274,7 +274,7 @@ def train_xgbRanker_model(train, test, with_val=False):
     
     # Define parameters for XGBRanker model
     params = {
-        'objective': 'rank:pairwise',
+        'objective': 'rank:ndcg',
         'eval_metric': 'ndcg',
         'learning_rate': 0.1,
         'gamma': 1.0,
