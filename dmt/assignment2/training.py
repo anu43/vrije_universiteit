@@ -1,6 +1,7 @@
 import lightgbm as lgb
 import xgboost as xgb
 import pandas as pd
+import matplotlib.pyplot as plt
 from time import time
 from datetime import datetime
 from sklearn.model_selection import train_test_split
@@ -162,7 +163,7 @@ def train_lgbm_model(train, test):
     start = time()
     # Fit the model
     print('started training')
-    ranker.fit(X_train, y_train, group=groups_train,
+    ranker.fit(X_train, y_train, group=groups_train, eval_metric='ndcg@n',
                eval_set=[(X_val, y_val)], eval_group=[groups_val],
                early_stopping_rounds=50, feature_name=X_train.columns.to_list(),
                categorical_feature=categoricalCols, verbose=False)
@@ -186,7 +187,7 @@ def train_lgbm_model(train, test):
     print('done predicting')
 
     # Return test set with results
-    return test
+    return test, ranker.evals_result_['valid_0']['ndcg@1']
 
 
 def train_xgbRanker_model(train, test, with_val=False):
@@ -281,6 +282,7 @@ def train_xgbRanker_model(train, test, with_val=False):
     # Reindex columns for prediction
     cols = list(ranker.get_booster().feature_names)
     X_test = test.reindex(cols, axis=1)
+    
     # Predict
     print('predicting')
     preds = ranker.predict(X_test)
@@ -293,8 +295,31 @@ def train_xgbRanker_model(train, test, with_val=False):
     print('done predicting')
 
     # Return test set with results
-    return test
+    return test, ranker.evals_result['eval_0']['ndcg']
 
+
+def plot_eval_results(xgbRankerResults, LGBMRankerResults):
+    
+    # Set min and max value for y range
+    minval = min(min(xgbRankerResults), min(LGBMRankerResults))
+    maxval = max(max(xgbRankerResults), max(LGBMRankerResults))
+    
+    # Plot xgbRankerResults and LGBMRankerResults
+    plt.plot(xgbRankerResults, label='XGBRanker')
+    plt.plot(LGBMRankerResults, label='LGBMRanker')
+    
+    # Set title
+    plt.title('NDGC Metric Evaluation')
+    # Set xlabel
+    plt.xlabel('Number of Epochs')
+    # Set ylabel
+    plt.ylabel('NDCG Metric Range')
+    # Set y range
+    plt.ylim(minval, maxval)
+    # Put labels of xgbRankerResults and LGBMRankerResults
+    plt.legend()
+    # Show plot
+    plt.show()
 
 # Import training/test sets
 train = pd.read_csv('../../../../data/4trainingTesting/training.csv', nrows=20000)
@@ -304,10 +329,13 @@ test = pd.read_csv('../../../../data/4trainingTesting/test.csv', nrows=20000)
 train, test = set_types(train, test)
 
 # Train LGBM model
-test = train_lgbm_model(train, test)
+test, LGBMRankerResults = train_lgbm_model(train, test)
 
 # Train XGBoostRanker model
-test = train_xgbRanker_model(train, test, True)
+test, xgbRankerResults = train_xgbRanker_model(train, test, True)
+
+# Plot results
+plot_eval_results(xgbRankerResults, LGBMRankerResults)
 
 # Write the result to csv
 test.to_csv('../../../../data/predicted_test.csv', index=False)
