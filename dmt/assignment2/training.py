@@ -7,25 +7,25 @@ from datetime import datetime
 from sklearn.model_selection import train_test_split
 
 
-def closestNumber(n, m) : 
-    
-    # Find the quotient 
-    q = int(n / m) 
-      
-    # 1st possible closest number 
-    n1 = m * q 
-      
-    # 2nd possible closest number 
-    if((n * m) > 0) : 
-        n2 = (m * (q + 1))  
-    else : 
-        n2 = (m * (q - 1)) 
-      
-    # if true, then n1 is the required closest number 
-    if (abs(n - n1) < abs(n - n2)) : 
-        return n1 
-      
-    # else n2 is the required closest number  
+def closestNumber(n, m):
+
+    # Find the quotient
+    q = int(n / m)
+
+    # 1st possible closest number
+    n1 = m * q
+
+    # 2nd possible closest number
+    if((n * m) > 0):
+        n2 = (m * (q + 1))
+    else:
+        n2 = (m * (q - 1))
+
+    # if true, then n1 is the required closest number
+    if (abs(n - n1) < abs(n - n2)):
+        return n1
+
+    # else n2 is the required closest number
     return n2
 
 
@@ -33,12 +33,12 @@ def extract_groups(df) -> list:
 
     # Define an empty list for groups
     groups = list()
-    
+
     # Set ids from 'srch_id'
     ids = df.srch_id.unique()
     # Define the length of ids
     lenID = len(ids)
-    
+
     # Return the same or closest length that is divisible by 4
     lenID = closestNumber(lenID, 4)
 
@@ -51,7 +51,7 @@ def extract_groups(df) -> list:
             print('50% at:', datetime.now().time())
         elif i == 3 * lenID / 4:
             print('75% at:', datetime.now().time())
-        
+
         # Append the length of the specific id to the groups list
         groups.append(len(df[df.srch_id == id_]))
 
@@ -214,7 +214,7 @@ def train_xgbRanker_model(train, test, with_val=False):
         Evaluation metrics in the training session.
 
     '''
-    
+
     # Define parameters for XGBRanker model
     params = {
         'objective': 'rank:ndcg',
@@ -225,10 +225,10 @@ def train_xgbRanker_model(train, test, with_val=False):
         'max_depth': 10,
         'n_estimators': 10
     }
-    
+
     # Create the XGBRanker model
     ranker = xgb.sklearn.XGBRanker(**params)
-    
+
     # If the training would be with validation set
     if with_val:
         # Split and prepare groups of train/val sets
@@ -245,15 +245,15 @@ def train_xgbRanker_model(train, test, with_val=False):
         stop = time()
         # Print training time
         print('XGB Ranker training time', (stop - start) / 60, 'mins')
-        
+
     else:
         # Prepare X_train and y_train
         target = 'target'  # Set column name for y
         # Receive all columns except target column for X
         X_train = train.loc[:, train.columns != target]
         # Get the target column only
-        y_train = train.loc[:, target]  
-        
+        y_train = train.loc[:, target]
+
         # Set the grouping for training set
         print('extracting training groups at:', datetime.now().time())
         # Set start time
@@ -262,10 +262,10 @@ def train_xgbRanker_model(train, test, with_val=False):
         # Set stop time
         stop = time()
         print('extracting training groups took', (stop - start) / 60, 'mins')
-        
+
         # Drop 'srch_id' from training set
         X = X_train.drop('srch_id', axis=1)
-        
+
         # Set start time
         start = time()
         # Fit the model
@@ -274,19 +274,18 @@ def train_xgbRanker_model(train, test, with_val=False):
         # Set stop time
         stop = time()
         # Print training time
-        print('XGB Ranker training time', (stop - start) / 60, 'mins')        
-        
+        print('XGB Ranker training time', (stop - start) / 60, 'mins')
 
     # Sort test data by id
     # test.sort_values('srch_id', inplace=True)
-    
+
     # Drop srch_id from test set
     X_test = test.drop('srch_id', axis=1)
-    
+
     # Reindex columns for prediction
     cols = list(ranker.get_booster().feature_names)
     X_test = test.reindex(cols, axis=1)
-    
+
     # Predict
     print('predicting')
     preds = ranker.predict(X_test)
@@ -303,15 +302,15 @@ def train_xgbRanker_model(train, test, with_val=False):
 
 
 def plot_eval_results(xgbRankerResults, LGBMRankerResults):
-    
+
     # Set min and max value for y range
     minval = min(min(xgbRankerResults), min(LGBMRankerResults))
     maxval = max(max(xgbRankerResults), max(LGBMRankerResults))
-    
+
     # Plot xgbRankerResults and LGBMRankerResults
     plt.plot(xgbRankerResults, label='XGBRanker')
     plt.plot(LGBMRankerResults, label='LGBMRanker')
-    
+
     # Set title
     plt.title('NDGC Metric Evaluation')
     # Set xlabel
@@ -324,6 +323,7 @@ def plot_eval_results(xgbRankerResults, LGBMRankerResults):
     plt.legend()
     # Show plot
     plt.show()
+
 
 # Import training/test sets
 train = pd.read_csv('../../../../data/4trainingTesting/training.csv', nrows=20000)
