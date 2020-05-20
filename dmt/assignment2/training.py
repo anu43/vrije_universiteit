@@ -140,6 +140,8 @@ def train_lgbm_model(train, test):
     -------
     test : Pandas' DataFrame object
         Test dataset with ranking_rates column.
+    ranker.eval_results_ : array
+        Evaluation metrics in the training session.
 
     '''
 
@@ -208,6 +210,8 @@ def train_xgbRanker_model(train, test, with_val=False):
     -------
     test : Pandas' DataFrame object
         Test dataset with ranking_rates column.
+    ranker.eval_results_ : array
+        Evaluation metrics in the training session.
 
     '''
     
