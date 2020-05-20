@@ -189,68 +189,6 @@ def train_lgbm_model(train, test):
     return test
 
 
-def train_xgboost_model(train, test):
-    '''
-    Returns the tested dataset after the training
-    Ranking results are in the column called ranking_rates
-
-    Parameters
-    ----------
-    train : Pandas' DataFrame object
-        Train dataset.
-    test : Pandas' DataFrame object
-        Test dataset.
-
-    Returns
-    -------
-    test : Pandas' DataFrame object
-        Test dataset with ranking_rates column.
-
-    '''
-
-    # Prepare X and y
-    target = 'target'  # Set column name for y
-    # Receive all columns except target column for X
-    X_train = train.loc[:, train.columns != target]
-    # Get the target column only
-    y_train = train.loc[:, target]
-
-    # Create a DMatrix for XGBoost model
-    dtrain = xgb.DMatrix(X_train, label=y_train)
-    # Create XGBoost model
-    parameters = {
-        'max_depth': 10,
-        'eta': 1,
-        'silent': 1,
-        'objective': 'reg:squarederror',
-        'eval_metric': 'ndcg',
-        'learning_rate': .05
-    }
-
-    # Set start time
-    start = time()
-    # Fit the model
-    xg = xgb.train(parameters,
-                   dtrain, 50)
-    # Set stop time
-    stop = time()
-    # Print training time
-    print('XGBoost training time', (stop - start) / 60, 'mins')
-
-    # Predict
-    cols = xg.feature_names
-    test = test.reindex(cols, axis=1)
-    dtest = xgb.DMatrix(test)
-    preds = xg.predict(dtest)
-    test['ranking_rates'] = preds
-    # test.sort_values(['srch_id', 'ranking_rates'],
-    #                  ascending=[True, False],
-    #                  inplace=True)
-
-    # Return test set with results
-    return test
-
-
 def train_xgbRanker_model(train, test, with_val=False):
     '''
     Returns the tested dataset after the training
@@ -294,7 +232,7 @@ def train_xgbRanker_model(train, test, with_val=False):
         # Set start time
         start = time()
         # Fit the model
-        print('started training')
+        print('started training with eval set')
         ranker.fit(X_train, y_train, group=groups_train,
                    eval_set=[(X_val, y_val)], eval_group=[groups_val],
                    early_stopping_rounds=50, verbose=False)
@@ -359,8 +297,8 @@ def train_xgbRanker_model(train, test, with_val=False):
 
 
 # Import training/test sets
-train = pd.read_csv('../../../../data/4trainingTesting/training.csv')
-test = pd.read_csv('../../../../data/4trainingTesting/test.csv')
+train = pd.read_csv('../../../../data/4trainingTesting/training.csv', nrows=20000)
+test = pd.read_csv('../../../../data/4trainingTesting/test.csv', nrows=20000)
 
 # Set types of train/test
 train, test = set_types(train, test)
@@ -368,11 +306,8 @@ train, test = set_types(train, test)
 # Train LGBM model
 test = train_lgbm_model(train, test)
 
-# Train XGBoost model
-test = train_xgboost_model(train, test)
-
 # Train XGBoostRanker model
-test = train_xgbRanker_model(train, test)
+test = train_xgbRanker_model(train, test, True)
 
 # Write the result to csv
 test.to_csv('../../../../data/predicted_test.csv', index=False)
