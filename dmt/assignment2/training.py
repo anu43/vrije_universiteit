@@ -152,7 +152,7 @@ def train_lgbm_model(train, test):
     ]
 
     # Split and prepare groups of train/val sets
-    # X_train, y_train, X_val, y_val, groups_train, groups_val = prepareSets4XGBRanker(train)
+    X_train, y_train, X_val, y_val, groups_train, groups_val = prepareSets4XGBRanker(train)
 
     # Sort test data by id
     test.sort_values('srch_id', inplace=True)
@@ -232,7 +232,7 @@ def train_xgbRanker_model(train, test, with_val=False):
     # If the training would be with validation set
     if with_val:
         # Split and prepare groups of train/val sets
-        # X_train, y_train, X_val, y_val, groups_train, groups_val = prepareSets4XGBRanker(train)
+        X_train, y_train, X_val, y_val, groups_train, groups_val = prepareSets4XGBRanker(train)
 
         # Set start time
         start = time()
