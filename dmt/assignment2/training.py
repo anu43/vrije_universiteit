@@ -245,6 +245,10 @@ def train_xgbRanker_model(train, test, with_val=False):
         stop = time()
         # Print training time
         print('XGB Ranker training time', (stop - start) / 60, 'mins')
+        
+        # Plot the tree
+        # print('Plotting the model tree')
+        # xgb.plot_tree(ranker, rankdir='LR')
 
     else:
         # Prepare X_train and y_train
@@ -275,6 +279,10 @@ def train_xgbRanker_model(train, test, with_val=False):
         stop = time()
         # Print training time
         print('XGB Ranker training time', (stop - start) / 60, 'mins')
+        
+        # Plot the tree
+        # print('Plotting the model tree')
+        # xgb.plot_tree(ranker, rankdir='LR')
 
     # Sort test data by id
     # test.sort_values('srch_id', inplace=True)
@@ -326,17 +334,17 @@ def plot_eval_results(xgbRankerResults, LGBMRankerResults):
 
 
 # Import training/test sets
-train = pd.read_csv('../../../../data/4trainingTesting/training.csv', nrows=20000)
-test = pd.read_csv('../../../../data/4trainingTesting/test.csv', nrows=20000)
+train = pd.read_csv('../../../../data/4trainingTesting/training.csv')
+test = pd.read_csv('../../../../data/4trainingTesting/test.csv')
 
 # Set types of train/test
 train, test = set_types(train, test)
 
 # Train LGBM model
-test, LGBMRankerResults = train_lgbm_model(train, test)
+testL, LGBMRankerResults = train_lgbm_model(train, test)
 
 # Train XGBoostRanker model
-test, xgbRankerResults = train_xgbRanker_model(train, test, True)
+testX, xgbRankerResults = train_xgbRanker_model(train, test, True)
 
 # Plot results
 plot_eval_results(xgbRankerResults, LGBMRankerResults)
