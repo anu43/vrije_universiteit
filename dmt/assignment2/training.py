@@ -312,23 +312,30 @@ def train_xgbRanker_model(train, test, with_val=False):
 def plot_eval_results(xgbRankerResults, LGBMRankerResults):
 
     # Set min and max value for y range
-    minval = min(min(xgbRankerResults), min(LGBMRankerResults))
-    maxval = max(max(xgbRankerResults), max(LGBMRankerResults))
+    # minval = min(min(xgbRankerResults), min(LGBMRankerResults))
+    # maxval = max(max(xgbRankerResults), max(LGBMRankerResults))
 
     # Plot xgbRankerResults and LGBMRankerResults
-    plt.plot(xgbRankerResults, label='XGBRanker')
-    plt.plot(LGBMRankerResults, label='LGBMRanker')
-
+    plt.subplot(221)
+    plt.plot(xgbRankerResults)
+    
     # Set title
-    plt.title('NDGC Metric Evaluation')
+    plt.title('NDGC Metric Evaluation\n for XGBRanker')
     # Set xlabel
     plt.xlabel('Number of Epochs')
     # Set ylabel
     plt.ylabel('NDCG Metric Range')
-    # Set y range
-    plt.ylim(minval, maxval)
-    # Put labels of xgbRankerResults and LGBMRankerResults
-    plt.legend()
+
+    plt.subplot(222)
+    plt.plot(LGBMRankerResults)
+    
+    # Set title
+    plt.title('NDGC Metric Evaluation\n for LGBMRanker')
+    # Set xlabel
+    plt.xlabel('Number of Epochs')
+
+    plt.figure(figsize=(20,20))    
+
     # Show plot
     plt.show()
 
