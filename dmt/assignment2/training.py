@@ -286,7 +286,11 @@ def train_xgbRanker_model(train, test, with_val=False):
 
     # Sort test data by id
     # test.sort_values('srch_id', inplace=True)
-
+    
+    # Plot the feature importance table
+    xgb.plot_importance(ranker, max_num_features=10) # top 10 most important features
+    plt.show()
+    
     # Drop srch_id from test set
     X_test = test.drop('srch_id', axis=1)
 
