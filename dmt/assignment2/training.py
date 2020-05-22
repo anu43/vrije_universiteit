@@ -219,11 +219,11 @@ def train_xgbRanker_model(train, test, with_val=False):
     params = {
         'objective': 'rank:ndcg',
         'eval_metric': 'ndcg',
-        'learning_rate': 0.1,
-        'gamma': 1.0,
-        'min_child_weight': 0.1,
+        'learning_rate': 0.02,
+        'gamma': 0.5,
+        'min_child_weight': 1,
         'max_depth': 10,
-        'n_estimators': 10
+        'n_estimators': 500
     }
 
     # Create the XGBRanker model
