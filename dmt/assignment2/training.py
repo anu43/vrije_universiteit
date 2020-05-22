@@ -322,7 +322,7 @@ def plot_eval_results(xgbRankerResults, LGBMRankerResults):
     # Set title
     plt.title('NDGC Metric Evaluation\n for XGBRanker')
     # Set xlabel
-    plt.xlabel('Number of Epochs')
+    plt.xlabel('Number of Evaluations')
     # Set ylabel
     plt.ylabel('NDCG Metric Range')
 
@@ -332,7 +332,7 @@ def plot_eval_results(xgbRankerResults, LGBMRankerResults):
     # Set title
     plt.title('NDGC Metric Evaluation\n for LGBMRanker')
     # Set xlabel
-    plt.xlabel('Number of Epochs')
+    plt.xlabel('Number of Evaluations')
 
     plt.figure(figsize=(20,20))    
 
