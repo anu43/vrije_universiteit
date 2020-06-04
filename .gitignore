@@ -1,3 +1,6 @@
+# gitignore file itself
+.gitignore
+
 # R files
 *.RData
 *.Rhistory
@@ -108,3 +111,6 @@ venv.bak/
 # mypy
 .mypy_cache/
 .Rproj.user
+
+# DS Store
+**/.DS_Store
