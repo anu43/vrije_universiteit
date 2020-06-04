@@ -24,7 +24,7 @@ file_names = {
 
 
 def visualize_gyroscope_data(file_name: str):
-    'Visualizes the gyroscope data with several different granularities'
+    'Visualizes the gyroscope data'
     # Set data
     data = file_names[file_name]
     # Create axes
