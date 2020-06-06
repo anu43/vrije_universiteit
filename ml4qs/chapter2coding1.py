@@ -42,10 +42,10 @@ def visualize_gyroscope_data(file_name: str):
     axs[2].set_title('Z Axis')
     axs[3].set_title('Absolute Rate')
 
-    # Show plot
-    plt.show()
     # Save plot
     plt.savefig('./gyroscope', quality=95)
+    # Show plot
+    plt.show()
 
 
 def visualize_gps_data(file_name: str):
