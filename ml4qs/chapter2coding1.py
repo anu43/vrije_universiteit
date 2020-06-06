@@ -44,6 +44,8 @@ def visualize_gyroscope_data(file_name: str):
 
     # Show plot
     plt.show()
+    # Save plot
+    plt.savefig('./gyroscope', quality=95)
 
 
 def visualize_gps_data(file_name: str):
