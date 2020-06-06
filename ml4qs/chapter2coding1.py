@@ -28,19 +28,19 @@ def visualize_gyroscope_data(file_name: str):
     # Set data
     data = file_names[file_name]
     # Create axes
-    fig, axs = plt.subplots(4, figsize=(10, 15))
+    fig, axs = plt.subplots(3, figsize=(10, 15))
 
     # Plot features
     axs[0].plot(data.index, data.iloc[:, 0])  # X axis
     axs[1].plot(data.index, data.iloc[:, 1], 'tab:orange')  # Y axis
     axs[2].plot(data.index, data.iloc[:, 2], 'tab:green')  # Z axis
-    axs[3].plot(data.index, data.iloc[:, 3], 'tab:red')  # Absolute value
+    # axs[3].plot(data.index, data.iloc[:, 3], 'tab:red')  # Absolute value
 
     # Set titles
     axs[0].set_title('X Axis')
     axs[1].set_title('Y Axis')
     axs[2].set_title('Z Axis')
-    axs[3].set_title('Absolute Rate')
+    # axs[3].set_title('Absolute Rate')
 
     # Save plot
     plt.savefig('./gyroscope', quality=95)
