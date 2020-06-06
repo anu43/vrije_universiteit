@@ -83,6 +83,8 @@ def visualize_gps_data(file_name: str):
     axs[2, 1].set_title('Vertical Accuracy')
     axs[2, 2].set_title('Satellites')
 
+    # Save plot
+    plt.savefig('./gps', quality=95)
     # Show plot
     plt.show()
 
