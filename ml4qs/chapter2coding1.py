@@ -53,7 +53,7 @@ def visualize_gps_data(file_name: str):
     # Set data
     data = file_names[file_name]
     # Create axes
-    fig, axs = plt.subplots(3, 3, figsize=(10, 15))
+    fig, axs = plt.subplots(2, 3, figsize=(10, 15))
 
     # Plot features
     # First row
@@ -64,10 +64,10 @@ def visualize_gps_data(file_name: str):
     axs[1, 0].plot(data.index, data.iloc[:, 4])  # Speed
     axs[1, 1].plot(data.index, data.iloc[:, 5])  # Direction
     axs[1, 2].plot(data.index, data.iloc[:, 6])  # Distance
-    # Third row
-    axs[2, 0].plot(data.index, data.iloc[:, 7])  # Horizontal Accuracy
-    axs[2, 1].plot(data.index, data.iloc[:, 8])  # Vertical Accuracy
-    axs[2, 2].plot(data.index, data.iloc[:, 9])  # Satellites
+    # # Third row
+    # axs[2, 0].plot(data.index, data.iloc[:, 7])  # Horizontal Accuracy
+    # axs[2, 1].plot(data.index, data.iloc[:, 8])  # Vertical Accuracy
+    # axs[2, 2].plot(data.index, data.iloc[:, 9])  # Satellites
 
     # Set titles
     # First row
@@ -78,10 +78,10 @@ def visualize_gps_data(file_name: str):
     axs[1, 0].set_title('Speed')
     axs[1, 1].set_title('Direction')
     axs[1, 2].set_title('Distance')
-    # Third row
-    axs[2, 0].set_title('Horizontal Accuracy')
-    axs[2, 1].set_title('Vertical Accuracy')
-    axs[2, 2].set_title('Satellites')
+    # # Third row
+    # axs[2, 0].set_title('Horizontal Accuracy')
+    # axs[2, 1].set_title('Vertical Accuracy')
+    # axs[2, 2].set_title('Satellites')
 
     # Save plot
     plt.savefig('./gps', quality=95)
