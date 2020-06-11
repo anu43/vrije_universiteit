@@ -33,3 +33,18 @@ df.to_csv('./gyro.csv', index=False)
 
 # Read processed csv
 df = pd.read_csv('gyro.csv')
+
+# Apply rolling to get previous movements from each axis by exponential weights
+weights = np.arange(1, 11)  # Exponential weights for window 10
+# Apply rolling to X-axis
+df['gyro_x_window'] = df.gyro_x.rolling(10).apply(
+    lambda axs: np.dot(axs, weights) / weights.sum()
+)
+# Apply rolling to X-axis
+df['gyro_y_window'] = df.gyro_y.rolling(10).apply(
+    lambda axs: np.dot(axs, weights) / weights.sum()
+)
+# Apply rolling to X-axis
+df['gyro_z_window'] = df.gyro_z.rolling(10).apply(
+    lambda axs: np.dot(axs, weights) / weights.sum()
+)
