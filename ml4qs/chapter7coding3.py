@@ -4,6 +4,7 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import classification_report
 from sklearn.ensemble import RandomForestClassifier
+from sklearn import svm
 import matplotlib.pyplot as plt
 import xgboost as xgb
 import numpy as np
@@ -115,4 +116,22 @@ accuracy = accuracy_score(y_test, predictions)
 print(accuracy)
 # Calculate precision/recall/f1
 report = classification_report(y_test, predictions)
+print(report)
+
+# Apply SVM
+model_SVM = svm.SVC(kernel='linear')
+# Fit the model
+model_SVM.fit(X_train, y_train)
+
+# Predict the test samples
+predictions = model_SVM.predict(X_test)
+
+# Create confusion matrix
+results = confusion_matrix(y_test, predictions)
+print(results)
+# Calculate the accuracy
+accuracy = accuracy_score(y_test, predictions)
+print(accuracy)
+# Calculate precision/recall/f1
+report = classification_report(y_test, predictions, zero_division=1)
 print(report)
