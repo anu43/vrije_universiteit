@@ -3,6 +3,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import classification_report
+from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt
 import xgboost as xgb
 import numpy as np
@@ -90,3 +91,28 @@ print(report)
 eval_results = model.evals_result()
 # Plot evaluation results
 plt.plot(eval_results['validation_0']['merror'])
+
+# Apply Random Forest Classifier
+model_forest = RandomForestClassifier()
+# Split data into train/test sets
+train.dropna(inplace=True)  # Drop NaN values for the model
+X = train.loc[:, train.columns != 'activity']
+y = train.activity
+X_train, X_test, y_train, y_test = train_test_split(X, y,
+                                                    test_size=0.2, random_state=43)
+
+# Fit the model
+model_forest.fit(X_train, y_train)
+
+# Predict the test samples
+predictions = model_forest.predict(X_test)
+
+# Create confusion matrix
+results = confusion_matrix(y_test, predictions)
+print(results)
+# Calculate the accuracy
+accuracy = accuracy_score(y_test, predictions)
+print(accuracy)
+# Calculate precision/recall/f1
+report = classification_report(y_test, predictions)
+print(report)
