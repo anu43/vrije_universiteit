@@ -124,7 +124,7 @@ report = classification_report(y_test, predictions)
 print(report)
 
 # Apply SVM
-model_SVM = svm.SVC(kernel='linear')
+model_SVM = svm.SVC()
 # Fit the model
 model_SVM.fit(X_train, y_train)
 
