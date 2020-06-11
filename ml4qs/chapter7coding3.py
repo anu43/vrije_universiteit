@@ -30,3 +30,6 @@ df[df['activity'] == np.nan] = 'walking'
 
 # Write it to csv without indexing
 df.to_csv('./gyro.csv', index=False)
+
+# Read processed csv
+df = pd.read_csv('gyro.csv')
