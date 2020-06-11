@@ -60,12 +60,18 @@ train = df.drop('time', axis=1)
 X = train.loc[:, train.columns != 'activity']
 y = train.activity
 X_train, X_test, y_train, y_test = train_test_split(X, y,
-                                                    test_size=0.2, random_state=43)
+                                                    test_size=0.2, random_state=43)  # train/test
+
+X_train, X_val, y_train, y_val = train_test_split(X_train, y_train,
+                                                  test_size=0.2, random_state=43)  # train/val
 
 # Apply XGBoost Classifier
 model = xgb.XGBClassifier()
 # Fit the model
-model.fit(X_train, y_train, verbose=False)
+# eval_set = tuple(zip(X_val.values, y_val.values))  # created eval set
+model.fit(X_train, y_train,
+          eval_set=[(X_val, y_val)],
+          verbose=False)
 
 # Predict the test samples
 predictions = model.predict(X_test)
@@ -79,3 +85,8 @@ print(accuracy)
 # Calculate precision/recall/f1
 report = classification_report(y_test, predictions)
 print(report)
+
+# Receive evaluation results
+eval_results = model.evals_result()
+# Plot evaluation results
+plt.plot(eval_results['validation_0']['merror'])
