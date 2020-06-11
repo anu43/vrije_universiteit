@@ -69,3 +69,13 @@ model.fit(X_train, y_train, verbose=False)
 
 # Predict the test samples
 predictions = model.predict(X_test)
+
+# Create confusion matrix
+results = confusion_matrix(y_test, predictions)
+print(results)
+# Calculate the accuracy
+accuracy = accuracy_score(y_test, predictions)
+print(accuracy)
+# Calculate precision/recall/f1
+report = classification_report(y_test, predictions)
+print(report)
