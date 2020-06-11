@@ -1,4 +1,5 @@
 # Import libraries
+from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -48,3 +49,14 @@ df['gyro_y_window'] = df.gyro_y.rolling(10).apply(
 df['gyro_z_window'] = df.gyro_z.rolling(10).apply(
     lambda axs: np.dot(axs, weights) / weights.sum()
 )
+
+train = df.drop('time', axis=1)
+
+# Split data into train/val/test sets
+X = train.loc[:, train.columns != 'activity']
+y = train.activity
+X_train, X_test, y_train, y_test = train_test_split(X, y,
+                                                    test_size=0.2, random_state=43)
+
+X_train, X_val, y_train, y_val = train_test_split(X_train, y_train,
+                                                  test_size=0.2, random_state=43)
