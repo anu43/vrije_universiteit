@@ -1,6 +1,10 @@
 # Import libraries
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import classification_report
 import matplotlib.pyplot as plt
+import xgboost as xgb
 import numpy as np
 import pandas as pd
 
@@ -58,5 +62,10 @@ y = train.activity
 X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                     test_size=0.2, random_state=43)
 
-X_train, X_val, y_train, y_val = train_test_split(X_train, y_train,
-                                                  test_size=0.2, random_state=43)
+# Apply XGBoost Classifier
+model = xgb.XGBClassifier()
+# Fit the model
+model.fit(X_train, y_train, verbose=False)
+
+# Predict the test samples
+predictions = model.predict(X_test)
