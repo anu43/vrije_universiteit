@@ -92,6 +92,11 @@ print(report)
 eval_results = model.evals_result()
 # Plot evaluation results
 plt.plot(eval_results['validation_0']['merror'])
+plt.xlabel('Epochs')  # X-Axis label
+plt.ylabel('Error rate')  # Y-Axis label
+plt.title('The Evaluation Results of XGBoost')  # Title
+# Save figure
+plt.savefig('xgboost_eval.png', quality=95)
 
 # Apply Random Forest Classifier
 model_forest = RandomForestClassifier()
