@@ -6,7 +6,7 @@
 
 # imports framework
 from concurrent.futures import ProcessPoolExecutor
-from deap import base, creator, tools
+from deap import base, creator, tools, algorithms
 import numpy as np
 import random
 import sys
@@ -104,3 +104,54 @@ toolbox.register("evaluate", evaluate)
 toolbox.register("mate", tools.cxTwoPoint)
 toolbox.register("mutate", tools.mutFlipBit, indpb=0.10)
 toolbox.register("select", tools.selTournament, tournsize=3)
+
+# Declare variables
+# 1. The number of generation
+# 2. The cross-over probability
+# 3. The mutation probability
+ngen, cxpb, mutpb = 5, 0.5, 0.2
+pop = toolbox.population(n=npop)
+for g in range(ngen):
+
+    # Select the next generation individuals
+    offspring = toolbox.select(pop, len(pop))
+    offspring = list(map(toolbox.clone, offspring))
+
+    # Apply crossover on the offspring
+    for child1, child2 in zip(offspring[::2], offspring[1::2]):
+        if random.random() < cxpb:
+            toolbox.mate(child1, child2)
+            del child1.fitness.values
+            del child2.fitness.values
+
+    # Apply mutation on the offspring
+    for mutant in offspring:
+        if random.random() < mutpb:
+            toolbox.mutate(mutant)
+            del mutant.fitness.values
+
+    invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+    for ind in invalid_ind:
+        fitnesses = toolbox.evaluate(ind)
+#     fitnesses = toolbox.evaluate(offspring)
+
+    for ind, fit in zip(invalid_ind, fitnesses):
+        ind.fitness.values = fit,
+
+    pop[:] = offspring
+
+for g in range(gens):
+    pop = toolbox.select(pop, k=len(pop))
+    pop = algorithms.varAnd(pop, toolbox, cxpb, mutpb)
+
+    invalids = [ind for ind in pop if not ind.fitness.valid]
+    for ind in invalids:
+        fitnesses = toolbox.evaluate(ind)
+#     fitnesses = toolbox.evaluate(invalids)
+
+    for ind, fit in zip(invalids, fitnesses):
+        ind.fitness.values = (fit/100),
+
+
+print(tools.selBest(pop, k=1))
+
