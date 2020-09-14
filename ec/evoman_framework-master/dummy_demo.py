@@ -155,3 +155,13 @@ for g in range(gens):
 
 print(tools.selBest(pop, k=1))
 
+# If it is test mode
+# loads file with the best solution for testing
+if run_mode == 'test':
+
+    bsol = np.loadtxt(experiment_name+'/best.txt')
+    print('\n RUNNING SAVED BEST SOLUTION \n')
+    env.update_parameter('speed', 'normal')
+    evaluate([bsol])
+
+    sys.exit(0)
