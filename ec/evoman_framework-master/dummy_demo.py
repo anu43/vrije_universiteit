@@ -10,7 +10,7 @@ import sys
 import os
 sys.path.insert(0, 'evoman')
 
-experiment_name = 'dummy_demo'
+experiment_name = 'taskI'
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
 
