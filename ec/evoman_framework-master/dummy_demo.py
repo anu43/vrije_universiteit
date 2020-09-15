@@ -9,6 +9,7 @@ from concurrent.futures import ProcessPoolExecutor
 from deap import base, creator, tools, algorithms
 import numpy as np
 import random
+import time
 import sys
 import os
 sys.path.insert(0, 'evoman')
@@ -97,8 +98,8 @@ creator.create("Individual", np.ndarray, fitness=creator.FitnessMax)
 toolbox = base.Toolbox()
 toolbox.register("attr_float", random.uniform, -1.0, 1.0)
 toolbox.register("individual", tools.initRepeat,
-                 creator.Individual, toolbox.attr_float,
-                 n=n_vars)
+	creator.Individual, toolbox.attr_float,
+	n=n_vars)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 toolbox.register("evaluate", evaluate)
 toolbox.register("mate", tools.cxTwoPoint)
@@ -131,9 +132,7 @@ for g in range(ngen):
             del mutant.fitness.values
 
     invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
-    for ind in invalid_ind:
-        fitnesses = toolbox.evaluate(ind)
-#     fitnesses = toolbox.evaluate(offspring)
+    fitnesses = map(toolbox.evaluate, invalid_ind)
 
     for ind, fit in zip(invalid_ind, fitnesses):
         ind.fitness.values = fit,
@@ -147,7 +146,6 @@ for g in range(gens):
     invalids = [ind for ind in pop if not ind.fitness.valid]
     for ind in invalids:
         fitnesses = toolbox.evaluate(ind)
-#     fitnesses = toolbox.evaluate(invalids)
 
     for ind, fit in zip(invalids, fitnesses):
         ind.fitness.values = (fit/100),
@@ -165,3 +163,11 @@ if run_mode == 'test':
     evaluate([bsol])
 
     sys.exit(0)
+
+fim = time.time()  # prints total execution time for experiment
+print('\nExecution time: '+str(round((fim-ini)/60))+' minutes \n')
+
+
+# saves control (simulation has ended) file for bash loop file
+file = open(experiment_name+'/neuroended', 'w')
+file.close()
