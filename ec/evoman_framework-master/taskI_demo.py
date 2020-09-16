@@ -14,6 +14,17 @@ experiment_name = 'taskI'
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
 
+
+def simulation(env, x):
+    '''gives the individuals of one population and returns stats from the env'''
+    f, p, e, t = env.play(pcont=x)
+    return f,
+
+
+def evaluate(x):
+    '''simulate with the given individual'''
+    return simulation(env, x)
+
 # def helper(enemy):
 #     # Update the number of neurons for this specific example
 #     n_hidden_neurons = 0
