@@ -8,8 +8,8 @@ import time
 import sys
 import os
 sys.path.insert(0, 'evoman')
-from environment import Environment
 from demo_controller import player_controller
+from environment import Environment
 
 experiment_name = 'taskI'
 if not os.path.exists(experiment_name):
@@ -123,6 +123,13 @@ elif sys.argv[1] == '-eaMuPlusLambda':
     # Run simulations
     final_pop, verb = algorithms.eaMuPlusLambda(pop, toolbox, int(3*npop/4), int(npop/5),
                                                 cxpb, mutpb, ngen, stats, verbose=True)
+elif sys.argv[1] == '-eaMuCommaLambda':
+    # Declare algorithm name
+    algorithm_name = 'eaMuCommaLambda'
+    # Run simulations
+    final_pop, verb = algorithms.eaMuCommaLambda(pop, toolbox, int(3*npop/4),
+                                                 int(3*npop/4) + 10, cxpb, mutpb,
+                                                 ngen, stats, verbose=True)
 
 # Check if path exists
 if not os.path.exists(f'{experiment_name}/{algorithm_name}'):
