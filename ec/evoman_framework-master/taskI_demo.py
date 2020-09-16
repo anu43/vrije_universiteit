@@ -39,3 +39,15 @@ if not os.path.exists(experiment_name):
 
 # for result in results:
 #     print(result)
+
+# initializes simulation in individual evolution mode, for single static enemy.
+env = Environment(experiment_name=experiment_name,
+                  enemies=[2],
+                  playermode="ai",
+                  player_controller=player_controller(),
+                  enemymode="static",
+                  level=2,
+                  speed="fastest")
+
+# default environment fitness is assumed for experiment
+env.state_to_log()  # checks environment state
