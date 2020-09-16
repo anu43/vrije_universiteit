@@ -7,7 +7,28 @@ from collections import Counter
 
 
 def modify_unit_clause(clauses: list, unit: int):
-    return clauses
+    # Declare an empty list for modified version of clauses
+    modified: list = list()
+    # Iterate through clauses to check the unit literals
+    for clause in clauses:
+        # If unit is in clause
+        if unit in clause:
+            continue
+        # If polar unit is in clause
+        elif -unit in clause:
+            # Take literals except -unit
+            cla = [cla for cla in clause if cla != -unit]
+            # If the length of the literals is 0
+            if len(cla) == 0:
+                # Then, return -1
+                return -1
+            # Append cla to modified list
+            modified.append(cla)
+        # If something else
+        else:
+            modified.append(clause)
+    # Return modified version of clauses
+    return modified
 
 
 def pure_literal(clauses: list):
