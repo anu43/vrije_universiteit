@@ -151,6 +151,10 @@ pd.DataFrame(verb.chapters['size'])[
 ].to_csv(f'{experiment_name}/{algorithm_name}/stats_size.csv')
 
 # Save the best solution
-best_solution = tools.selBest(pop, k=1)  # size: (1, n_vars)
+best_solution = tools.selBest(final_pop, k=1)  # size: (1, n_vars)
+# Save the worst solution
+worst_solution = tools.selWorst(final_pop, k=1)  # size: (1, n_vars)
 # Save the best solution to a txt file
 np.savetxt(f'{experiment_name}/{algorithm_name}/best.txt', np.array(best_solution).T)
+# Save the worst solution to a txt file
+np.savetxt(f'{experiment_name}/{algorithm_name}/worst.txt', np.array(worst_solution).T)
