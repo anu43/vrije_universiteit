@@ -76,3 +76,26 @@ npop = 10  # number of population
 gens = 5  # number of generation
 mutation = 0.2  # the mutation probability
 last_best = 0
+
+# Use DEAP
+creator.create("FitnessMax", base.Fitness, weights=(1.0,))
+creator.create("Individual", np.ndarray, fitness=creator.FitnessMax)
+toolbox = base.Toolbox()
+toolbox.register("attr_float", random.uniform, dom_l, dom_u)
+toolbox.register("individual", tools.initRepeat,
+                 creator.Individual, toolbox.attr_float,
+                 n=n_vars)
+toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+toolbox.register("evaluate", evaluate)
+toolbox.register("mate", tools.cxTwoPoint)
+toolbox.register("mutate", tools.mutFlipBit, indpb=0.10)
+toolbox.register("select", tools.selTournament, tournsize=3)
+
+# Statistics
+stat_fit = tools.Statistics(lambda ind: ind.fitness.values)  # Fitness statistics
+stat_size = tools.Statistics(key=len)  # Size statistics
+stats = tools.MultiStatistics(fitness=stat_fit, size=stat_size)
+stats.register('avg', np.mean)  # the average by np.mean
+stats.register('std', np.std)  # the standard deviation by np.std
+stats.register('min', np.min)  # the average by np.min
+stats.register('max', np.max)  # the average by np.max
