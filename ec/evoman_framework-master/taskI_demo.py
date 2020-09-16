@@ -108,3 +108,8 @@ pop = toolbox.population(n=npop)  # size: (npop, n_vars)
 final_pop, verb = algorithms.eaSimple(pop, toolbox, cxpb,
                                       mutpb, ngen, stats,
                                       verbose=True)
+
+# Save the best solution
+best_solution = tools.selBest(pop, k=1)  # size: (1, n_vars)
+# Save the best solution to a txt file
+np.savetxt(experiment_name + '/best.txt', best_solution)
