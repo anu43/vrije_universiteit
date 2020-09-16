@@ -76,6 +76,8 @@ npop = 10  # number of population
 ngen = 5  # number of generation
 mutation = 0.2  # the mutation probability
 last_best = 0
+cxpb = 0.5  # the cross-over probability
+mutpb = 0.2  # the mutation probability
 
 # Use DEAP
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))
