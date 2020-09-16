@@ -1,6 +1,4 @@
 # Import libs
-from environment import Environment
-from demo_controller import player_controller
 from concurrent.futures import ProcessPoolExecutor
 from deap import base, creator, tools, algorithms
 import numpy as np
@@ -9,6 +7,8 @@ import time
 import sys
 import os
 sys.path.insert(0, 'evoman')
+from environment import Environment
+from demo_controller import player_controller
 
 experiment_name = 'taskI'
 if not os.path.exists(experiment_name):
@@ -51,11 +51,14 @@ def evaluate(x):
 # for result in results:
 #     print(result)
 
+# Declare variables of the environment
+n_hidden = 10  # the number of hidden layers
+
 # initializes simulation in individual evolution mode, for single static enemy.
 env = Environment(experiment_name=experiment_name,
                   enemies=[2],
                   playermode="ai",
-                  player_controller=player_controller(),
+                  player_controller=player_controller(n_hidden),
                   enemymode="static",
                   level=2,
                   speed="fastest")
@@ -67,7 +70,6 @@ env.state_to_log()  # checks environment state
 run_mode = 'train'  # train or test
 
 # Declare variables of the simulation
-n_hidden = 10  # the number of hidden layers
 # The number of actions (individuals)
 n_vars = (env.get_num_sensors()+1)*n_hidden + (n_hidden+1)*5
 dom_u = 1  # upper bound of uniform dist
