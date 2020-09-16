@@ -73,7 +73,7 @@ n_vars = (env.get_num_sensors()+1)*n_hidden + (n_hidden+1)*5
 dom_u = 1  # upper bound of uniform dist
 dom_l = -1  # lower bound of uniform dist
 npop = 10  # number of population
-gens = 5  # number of generation
+ngen = 5  # number of generation
 mutation = 0.2  # the mutation probability
 last_best = 0
 
