@@ -63,7 +63,8 @@ env = Environment(experiment_name=experiment_name,
                   player_controller=player_controller(n_hidden),
                   enemymode="static",
                   level=2,
-                  speed="fastest")
+                  speed="fastest",
+                  logs='off')
 
 # default environment fitness is assumed for experiment
 env.state_to_log()  # checks environment state
@@ -109,6 +110,9 @@ stats.register('max', np.max)  # the average by np.max
 # Populate
 pop = toolbox.population(n=npop)  # size: (npop, n_vars)
 
+# Track time
+ini = time.perf_counter()
+
 # Run simulation due to given algorithm name
 if sys.argv[1] == '-eaSimple':
     # Declare algorithm name
@@ -128,8 +132,11 @@ elif sys.argv[1] == '-eaMuCommaLambda':
     algorithm_name = 'eaMuCommaLambda'
     # Run simulations
     final_pop, verb = algorithms.eaMuCommaLambda(pop, toolbox, int(3*npop/4),
-                                                 int(3*npop/4) + 10, cxpb, mutpb,
+                                                 int(6*npop/5), cxpb, mutpb,
                                                  ngen, stats, verbose=True)
+
+# Track time
+print(f'SIMULATION RUN FOR {round((time.perf_counter() - ini) / 60, 2)} mins')
 
 # Check if path exists
 if not os.path.exists(f'{experiment_name}/{algorithm_name}'):
