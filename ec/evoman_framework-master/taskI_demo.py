@@ -113,13 +113,20 @@ pop = toolbox.population(n=npop)  # size: (npop, n_vars)
 if sys.argv[1] == '-eaSimple':
     # Declare algorithm name
     algorithm_name = 'eaSimple'
-    if not os.path.exists(f'{experiment_name}/{algorithm_name}'):
-        os.makedirs(f'{experiment_name}/{algorithm_name}')
     # Run simulations
     final_pop, verb = algorithms.eaSimple(pop, toolbox, cxpb,
                                           mutpb, ngen, stats,
                                           verbose=True)
+elif sys.argv[1] == '-eaMuPlusLambda':
+    # Declare algorithm name
+    algorithm_name = 'eaMuPlusLambda'
+    # Run simulations
+    final_pop, verb = algorithms.eaMuPlusLambda(pop, toolbox, int(3*npop/4), int(npop/5),
+                                                cxpb, mutpb, ngen, stats, verbose=True)
 
+# Check if path exists
+if not os.path.exists(f'{experiment_name}/{algorithm_name}'):
+    os.makedirs(f'{experiment_name}/{algorithm_name}')
 # Save fitness statistics
 pd.DataFrame(verb.chapters['fitness'])[
     ['gen', 'nevals', 'avg', 'std', 'max', 'min']
