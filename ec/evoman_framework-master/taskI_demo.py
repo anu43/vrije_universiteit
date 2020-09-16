@@ -54,3 +54,14 @@ env.state_to_log()  # checks environment state
 
 # genetic algorithm params
 run_mode = 'train'  # train or test
+
+# Declare variables of the simulation
+n_hidden = 10  # the number of hidden layers
+# The number of actions (individuals)
+n_vars = (env.get_num_sensors()+1)*n_hidden + (n_hidden+1)*5
+dom_u = 1  # upper bound of uniform dist
+dom_l = -1  # lower bound of uniform dist
+npop = 10  # number of population
+gens = 5  # number of generation
+mutation = 0.2  # the mutation probability
+last_best = 0
