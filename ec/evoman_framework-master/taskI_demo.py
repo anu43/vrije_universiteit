@@ -108,21 +108,28 @@ stats.register('max', np.max)  # the average by np.max
 
 # Populate
 pop = toolbox.population(n=npop)  # size: (npop, n_vars)
-# Run simulations
-final_pop, verb = algorithms.eaSimple(pop, toolbox, cxpb,
-                                      mutpb, ngen, stats,
-                                      verbose=True)
+
+# Run simulation due to given algorithm name
+if sys.argv[1] == '-eaSimple':
+    # Declare algorithm name
+    algorithm_name = 'eaSimple'
+    if not os.path.exists(f'{experiment_name}/{algorithm_name}'):
+        os.makedirs(f'{experiment_name}/{algorithm_name}')
+    # Run simulations
+    final_pop, verb = algorithms.eaSimple(pop, toolbox, cxpb,
+                                          mutpb, ngen, stats,
+                                          verbose=True)
 
 # Save fitness statistics
 pd.DataFrame(verb.chapters['fitness'])[
     ['gen', 'nevals', 'avg', 'std', 'max', 'min']
-].to_csv(experiment_name + '/stats_fit.csv')
+].to_csv(f'{experiment_name}/{algorithm_name}/stats_fit.csv')
 # Save size statistics
 pd.DataFrame(verb.chapters['size'])[
     ['gen', 'nevals', 'avg', 'std', 'max', 'min']
-].to_csv(experiment_name + '/stats_size.csv')
+].to_csv(f'{experiment_name}/{algorithm_name}/stats_size.csv')
 
 # Save the best solution
 best_solution = tools.selBest(pop, k=1)  # size: (1, n_vars)
 # Save the best solution to a txt file
-np.savetxt(experiment_name + '/best.txt', np.array(best_solution).T)
+np.savetxt(f'{experiment_name}/{algorithm_name}/best.txt', np.array(best_solution).T)
