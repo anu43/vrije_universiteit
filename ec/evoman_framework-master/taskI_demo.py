@@ -101,3 +101,10 @@ stats.register('avg', np.mean)  # the average by np.mean
 stats.register('std', np.std)  # the standard deviation by np.std
 stats.register('min', np.min)  # the average by np.min
 stats.register('max', np.max)  # the average by np.max
+
+# Populate
+pop = toolbox.population(n=npop)  # size: (npop, n_vars)
+# Run simulations
+final_pop, verb = algorithms.eaSimple(pop, toolbox, cxpb,
+                                      mutpb, ngen, stats,
+                                      verbose=True)
