@@ -51,3 +51,6 @@ env = Environment(experiment_name=experiment_name,
 
 # default environment fitness is assumed for experiment
 env.state_to_log()  # checks environment state
+
+# genetic algorithm params
+run_mode = 'train'  # train or test
