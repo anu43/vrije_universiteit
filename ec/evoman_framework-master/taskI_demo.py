@@ -1,6 +1,7 @@
 # Import libs
 from concurrent.futures import ProcessPoolExecutor
 from deap import base, creator, tools, algorithms
+import pandas as pd
 import numpy as np
 import random
 import time
@@ -24,6 +25,7 @@ def simulation(env, x):
 def evaluate(x):
     '''simulate with the given individual'''
     return simulation(env, x)
+
 
 # def helper(enemy):
 #     # Update the number of neurons for this specific example
@@ -111,7 +113,16 @@ final_pop, verb = algorithms.eaSimple(pop, toolbox, cxpb,
                                       mutpb, ngen, stats,
                                       verbose=True)
 
+# Save fitness statistics
+pd.DataFrame(verb.chapters['fitness'])[
+    ['gen', 'nevals', 'avg', 'std', 'max', 'min']
+].to_csv(experiment_name + '/stats_fit.csv')
+# Save size statistics
+pd.DataFrame(verb.chapters['size'])[
+    ['gen', 'nevals', 'avg', 'std', 'max', 'min']
+].to_csv(experiment_name + '/stats_size.csv')
+
 # Save the best solution
 best_solution = tools.selBest(pop, k=1)  # size: (1, n_vars)
 # Save the best solution to a txt file
-np.savetxt(experiment_name + '/best.txt', best_solution)
+np.savetxt(experiment_name + '/best.txt', np.array(best_solution).T)
