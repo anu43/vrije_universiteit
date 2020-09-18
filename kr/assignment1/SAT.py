@@ -1,6 +1,7 @@
 # Import libraries
 import os
 import sys
+import math
 import time
 import random
 import mxklabs.dimacs
@@ -51,8 +52,6 @@ def pure_literal(clauses: list):
     # Assign pure literals
     assignment += pure_literals
     # Return clauses and assignment
-    print(clauses)
-    print(assignment)
     return clauses, assignment
 
 
@@ -90,8 +89,31 @@ def rand_var_selection(clauses):
     return random.choice(counter.keys())
 
 
-def dpll(clauses: list, init_clauses: dict):
-    pass
+def dpll(clauses: list, assignments: list):
+    # Check for the pure literals
+    clauses, pure_assignments = pure_literal(clauses)
+    # Check for the unit clauses
+    clauses, unit_assignments = unit_prop(clauses)
+    # Concat the assignments
+    assignments = assignments + pure_assignments + unit_assignments
+    # If the length of the literals is -1
+    if clauses == -1:
+        # Return an empty list
+        return list()
+    # Otherwise return the assignments
+    if not clauses:
+        return assignments
+
+    # Select literal to move on
+    lit = rand_var_selection(clauses)
+    # Backtrack
+    solution = dpll(modify_unit_clause(clauses, lit), assignments + [lit])
+    # If there is not a solution
+    if not solution:
+        # Try with assignment polar form of the literal
+        solution = dpll(modify_unit_clause(clauses, -lit), assignments + [-lit])
+    # Return solution
+    return solution
 
 
 if __name__ == '__main__':
@@ -99,12 +121,6 @@ if __name__ == '__main__':
     file_name = sys.argv[2]
     # Read file and get the clauses
     clauses: list = mxklabs.dimacs.read(file_name).clauses
-    # Convert DIMACS format to set
-    clauses: list = list(map(lambda clause: {*clause}, clauses))
-    # Initiliaze literals with None
-    init_clauses: set = dict.fromkeys(sorted({
-        abs(literal) for clause in clauses for literal in clause
-    }), None)
     # Declare solver
     if sys.argv[1] == '-S1':
-        solution = dpll(clauses, init_clauses)
+        solutions = dpll(clauses, list())
