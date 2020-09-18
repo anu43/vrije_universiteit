@@ -152,6 +152,6 @@ if __name__ == '__main__':
     if sys.argv[1] == '-S1':
         solutions = dpll(clauses, list())
     # Track time
-    print(f'Solved in {time.perf_counter() - start} seconds')
+    print(f'Solved in {time.perf_counter() - start} seconds\n')
     # Print the sudoku solution
     print_sudoku_solution(solutions)
