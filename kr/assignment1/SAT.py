@@ -56,6 +56,33 @@ def pure_literal(clauses: list):
     return clauses, assignment
 
 
+def unit_prop(clauses: list):
+    # Declare an empty list for assignments
+    assignments: list = list()
+    # Search for unit clauses
+    unit_clauses: list = [c for c in clauses if len(c) == 1]
+    # Iterate through unit clauses
+    while len(unit_clauses) > 0:
+        # Assign the first one
+        unit = unit_clauses[0]
+        # Modify clauses
+        clauses = modify_unit_clause(clauses, unit[0])
+        # Append to the assignments list
+        assignments.append([unit[0]])
+        # If the length of the literals is -1
+        if clauses == -1:
+            # Return -1 and an empty assignment list
+            return -1, list()
+        # If there are clauses
+        if not clauses:
+            # Return clauses and the assignments
+            return clauses, assignments
+        # Assign new unit clause list
+        unit_clauses = [c for c in clauses if len(c) == 1]
+    # Return clauses and the assignments
+    return clauses, assignments
+
+
 def rand_var_selection(clauses):
     # Declare the counter of literals
     counter: Counter = Counter([literal for clause in clauses for literal in clause])
