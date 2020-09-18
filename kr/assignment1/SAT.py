@@ -2,6 +2,7 @@
 import os
 import sys
 import time
+import random
 import mxklabs.dimacs
 from collections import Counter
 
@@ -53,6 +54,13 @@ def pure_literal(clauses: list):
     print(clauses)
     print(assignment)
     return clauses, assignment
+
+
+def rand_var_selection(clauses):
+    # Declare the counter of literals
+    counter: Counter = Counter([literal for clause in clauses for literal in clause])
+    # Return a random choice
+    return random.choice(counter.keys())
 
 
 def dpll(clauses: list, init_clauses: dict):
