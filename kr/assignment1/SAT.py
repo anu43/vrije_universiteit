@@ -86,7 +86,7 @@ def rand_var_selection(clauses):
     # Declare the counter of literals
     counter: Counter = Counter([literal for clause in clauses for literal in clause])
     # Return a random choice
-    return random.choice(counter.keys())
+    return random.choice(list(counter.keys()))
 
 
 def dpll(clauses: list, assignments: list):
@@ -121,12 +121,20 @@ def print_sudoku_solution(solutions: list):
     solution: dict = dict()
     # Convert solution list to a dict
     for sol in solutions:
-        # If literal has NOT sign
-        if sol[0] < 0:
-            solution[sol[0]] = False
-        # Otherwise
-        else:
-            solution[sol[0]] = True
+        try:
+            # If literal has NOT sign
+            if sol[0] < 0:
+                solution[sol[0]] = False
+            # Otherwise
+            else:
+                solution[sol[0]] = True
+        except Exception as e:
+            # If literal has NOT sign
+            if sol < 0:
+                solution[sol] = False
+            # Otherwise
+            else:
+                solution[sol] = True
     # Sort the solution
     solution: list = [
         *sorted(filter(lambda _variable: solution[_variable], solution))
