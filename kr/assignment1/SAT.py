@@ -116,6 +116,31 @@ def dpll(clauses: list, assignments: list):
     return solution
 
 
+def print_sudoku_solution(solutions: list):
+    # Declare an empty dict
+    solution: dict = dict()
+    # Convert solution list to a dict
+    for sol in solutions:
+        # If literal has NOT sign
+        if sol[0] < 0:
+            solution[sol[0]] = False
+        # Otherwise
+        else:
+            solution[sol[0]] = True
+    # Sort the solution
+    solution: list = [
+        *sorted(filter(lambda _variable: solution[_variable], solution))
+    ]
+    # Declare the square root of solution
+    sqrt: float = math.sqrt(len(solution))
+    # If it is square
+    if sqrt.is_integer():
+        # Print the solution by iterating by row
+        for row in range(int(sqrt)):
+            print(solution[:int(sqrt)])
+            solution = solution[int(sqrt):]
+
+
 if __name__ == '__main__':
     # Declare file name
     file_name = sys.argv[2]
@@ -124,3 +149,5 @@ if __name__ == '__main__':
     # Declare solver
     if sys.argv[1] == '-S1':
         solutions = dpll(clauses, list())
+    # Print the sudoku solution
+    print_sudoku_solution(solutions)
