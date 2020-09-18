@@ -146,8 +146,12 @@ if __name__ == '__main__':
     file_name = sys.argv[2]
     # Read file and get the clauses
     clauses: list = mxklabs.dimacs.read(file_name).clauses
+    # Track time
+    start = time.perf_counter()
     # Declare solver
     if sys.argv[1] == '-S1':
         solutions = dpll(clauses, list())
+    # Track time
+    print(f'Solved in {time.perf_counter() - start} seconds')
     # Print the sudoku solution
     print_sudoku_solution(solutions)
