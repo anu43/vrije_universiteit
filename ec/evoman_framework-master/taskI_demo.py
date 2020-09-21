@@ -8,8 +8,8 @@ import time
 import sys
 import os
 sys.path.insert(0, 'evoman')
-from demo_controller import player_controller
 from environment import Environment
+from demo_controller import player_controller
 
 experiment_name = 'taskI'
 if not os.path.exists(experiment_name):
@@ -77,84 +77,115 @@ run_mode = 'train'  # train or test
 n_vars = (env.get_num_sensors()+1)*n_hidden + (n_hidden+1)*5
 dom_u = 1  # upper bound of uniform dist
 dom_l = -1  # lower bound of uniform dist
-npop = 10  # number of population
-ngen = 5  # number of generation
-mutation = 0.2  # the mutation probability
-last_best = 0
+npop = 100  # number of population
+ngen = 30  # number of generation
 cxpb = 0.5  # the cross-over probability
 mutpb = 0.2  # the mutation probability
+EAs = [
+    {
+        'name': 'ea1',
+        'dom_u': 1,
+        'dom_l': -1,
+        'npop': 2,
+        'ngen': 3,
+        'cxpb': 0.5,
+        'mutpb': 0.2,
+        'tournsize': 3
+    },
+    {
+        'name': 'ea2',
+        'dom_u': 0.5,
+        'dom_l': -0.5,
+        'npop': 5,
+        'ngen': 2,
+        'cxpb': 0.75,
+        'mutpb': 0.3,
+        'tournsize': 5
+    }
+]
 
 # Use DEAP
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))
 creator.create("Individual", np.ndarray, fitness=creator.FitnessMax)
 toolbox = base.Toolbox()
-toolbox.register("attr_float", random.uniform, dom_l, dom_u)
-toolbox.register("individual", tools.initRepeat,
-                 creator.Individual, toolbox.attr_float,
-                 n=n_vars)
-toolbox.register("population", tools.initRepeat, list, toolbox.individual)
-toolbox.register("evaluate", evaluate)
-toolbox.register("mate", tools.cxTwoPoint)
-toolbox.register("mutate", tools.mutFlipBit, indpb=0.10)
-toolbox.register("select", tools.selTournament, tournsize=3)
 
-# Statistics
-stat_fit = tools.Statistics(lambda ind: ind.fitness.values)  # Fitness statistics
-stat_size = tools.Statistics(key=len)  # Size statistics
-stats = tools.MultiStatistics(fitness=stat_fit, size=stat_size)
-stats.register('avg', np.mean)  # the average by np.mean
-stats.register('std', np.std)  # the standard deviation by np.std
-stats.register('min', np.min)  # the average by np.min
-stats.register('max', np.max)  # the average by np.max
+# Run two different EA
+for EA in EAs:
+    # Use DEAP
+    toolbox.register("attr_float", random.uniform, EA['dom_l'], EA['dom_u'])
+    toolbox.register("individual", tools.initRepeat,
+                     creator.Individual, toolbox.attr_float,
+                     n=n_vars)
+    toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+    toolbox.register("evaluate", evaluate)
+    toolbox.register("mate", tools.cxTwoPoint)
+    toolbox.register("mutate", tools.mutFlipBit, indpb=0.10)
+    toolbox.register("select", tools.selTournament, tournsize=EA['tournsize'])
 
-# Populate
-pop = toolbox.population(n=npop)  # size: (npop, n_vars)
+    # Statistics
+    stat_fit = tools.Statistics(lambda ind: ind.fitness.values)  # Fitness statistics
+    stat_size = tools.Statistics(key=len)  # Size statistics
+    stats = tools.MultiStatistics(fitness=stat_fit, size=stat_size)
+    stats.register('avg', np.mean)  # the average by np.mean
+    stats.register('std', np.std)  # the standard deviation by np.std
+    stats.register('min', np.min)  # the average by np.min
+    stats.register('max', np.max)  # the average by np.max
 
-# Track time
-ini = time.perf_counter()
+    # Populate
+    pop = toolbox.population(n=EA['npop'])  # size: (npop, n_vars)
 
-# Run simulation due to given algorithm name
-if sys.argv[1] == '-eaSimple':
-    # Declare algorithm name
-    algorithm_name = 'eaSimple'
-    # Run simulations
-    final_pop, verb = algorithms.eaSimple(pop, toolbox, cxpb,
-                                          mutpb, ngen, stats,
-                                          verbose=True)
-elif sys.argv[1] == '-eaMuPlusLambda':
-    # Declare algorithm name
-    algorithm_name = 'eaMuPlusLambda'
-    # Run simulations
-    final_pop, verb = algorithms.eaMuPlusLambda(pop, toolbox, int(3*npop/4), int(npop/5),
-                                                cxpb, mutpb, ngen, stats, verbose=True)
-elif sys.argv[1] == '-eaMuCommaLambda':
-    # Declare algorithm name
-    algorithm_name = 'eaMuCommaLambda'
-    # Run simulations
-    final_pop, verb = algorithms.eaMuCommaLambda(pop, toolbox, int(3*npop/4),
-                                                 int(6*npop/5), cxpb, mutpb,
-                                                 ngen, stats, verbose=True)
+    # Track time
+    ini = time.perf_counter()
 
-# Track time
-print(f'SIMULATION RUN FOR {round((time.perf_counter() - ini) / 60, 2)} mins')
+    # Run simulation due to given algorithm name
+    if sys.argv[1] == '-eaSimple':
+        # Declare algorithm name
+        algorithm_name = 'eaSimple'
+        # Run simulations
+        final_pop, verb = algorithms.eaSimple(pop, toolbox, EA['cxpb'],
+                                              EA['mutpb'], EA['ngen'], stats,
+                                              verbose=True)
+    elif sys.argv[1] == '-eaMuPlusLambda':
+        # Declare algorithm name
+        algorithm_name = 'eaMuPlusLambda'
+        # Run simulations
+        final_pop, verb = algorithms.eaMuPlusLambda(pop, toolbox,
+                                                    int(3*npop/4), int(npop/5),
+                                                    EA['cxpb'], EA['mutpb'],
+                                                    EA['ngen'], stats, verbose=True)
+    elif sys.argv[1] == '-eaMuCommaLambda':
+        # Declare algorithm name
+        algorithm_name = 'eaMuCommaLambda'
+        # Run simulations
+        final_pop, verb = algorithms.eaMuCommaLambda(pop, toolbox,
+                                                     int(3*npop/4), int(6*npop/5),
+                                                     EA['cxpb'], EA['mutpb'],
+                                                     EA['ngen'], stats, verbose=True)
 
-# Check if path exists
-if not os.path.exists(f'{experiment_name}/{algorithm_name}'):
-    os.makedirs(f'{experiment_name}/{algorithm_name}')
-# Save fitness statistics
-pd.DataFrame(verb.chapters['fitness'])[
-    ['gen', 'nevals', 'avg', 'std', 'max', 'min']
-].to_csv(f'{experiment_name}/{algorithm_name}/stats_fit.csv')
-# Save size statistics
-pd.DataFrame(verb.chapters['size'])[
-    ['gen', 'nevals', 'avg', 'std', 'max', 'min']
-].to_csv(f'{experiment_name}/{algorithm_name}/stats_size.csv')
+    # Track time
+    print(f'SIMULATION RUN FOR {round((time.perf_counter() - ini) / 60, 2)} mins')
 
-# Save the best solution
-best_solution = tools.selBest(final_pop, k=1)  # size: (1, n_vars)
-# Save the worst solution
-worst_solution = tools.selWorst(final_pop, k=1)  # size: (1, n_vars)
-# Save the best solution to a txt file
-np.savetxt(f'{experiment_name}/{algorithm_name}/best.txt', np.array(best_solution).T)
-# Save the worst solution to a txt file
-np.savetxt(f'{experiment_name}/{algorithm_name}/worst.txt', np.array(worst_solution).T)
+    # Check if path exists
+    if not os.path.exists(f"{experiment_name}/{EA['name']}/{algorithm_name}"):
+        os.makedirs(f"{experiment_name}/{EA['name']}/{algorithm_name}")
+    # Save fitness statistics
+    # Params concatenation for file names
+    params = f"{EA['npop']}_{EA['ngen']}_{EA['cxpb']}_{EA['mutpb']}_{EA['tournsize']}"
+    pd.DataFrame(verb.chapters['fitness'])[
+        ['gen', 'nevals', 'avg', 'std', 'max', 'min']
+    ].to_csv(f"{experiment_name}/{EA['name']}/{algorithm_name}/stats_fit_{params}.csv")
+    # Save size statistics
+    pd.DataFrame(verb.chapters['size'])[
+        ['gen', 'nevals', 'avg', 'std', 'max', 'min']
+    ].to_csv(f"{experiment_name}/{EA['name']}/{algorithm_name}/stats_size_{params}.csv")
+
+    # Save the best solution
+    best_solution = tools.selBest(final_pop, k=1)  # size: (1, n_vars)
+    # Save the worst solution
+    worst_solution = tools.selWorst(final_pop, k=1)  # size: (1, n_vars)
+    # Save the best solution to a txt file
+    np.savetxt(f"{experiment_name}/{EA['name']}/{algorithm_name}/best_{params}.txt",
+               np.array(best_solution).T)
+    # Save the worst solution to a txt file
+    np.savetxt(f"{experiment_name}/{EA['name']}/{algorithm_name}/worst_{params}.txt",
+               np.array(worst_solution).T)
