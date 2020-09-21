@@ -8,8 +8,8 @@ import time
 import sys
 import os
 sys.path.insert(0, 'evoman')
-from environment import Environment
 from demo_controller import player_controller
+from environment import Environment
 
 experiment_name = 'taskI'
 if not os.path.exists(experiment_name):
@@ -75,12 +75,7 @@ run_mode = 'train'  # train or test
 # Declare variables of the simulation
 # The number of actions (individuals)
 n_vars = (env.get_num_sensors()+1)*n_hidden + (n_hidden+1)*5
-dom_u = 1  # upper bound of uniform dist
-dom_l = -1  # lower bound of uniform dist
-npop = 100  # number of population
-ngen = 30  # number of generation
-cxpb = 0.5  # the cross-over probability
-mutpb = 0.2  # the mutation probability
+# The EA params
 EAs = [
     {
         'name': 'ea1',
@@ -93,6 +88,16 @@ EAs = [
         'tournsize': 3
     },
     {
+        'name': 'ea1',
+        'dom_u': 1,
+        'dom_l': -1,
+        'npop': 4,
+        'ngen': 2,
+        'cxpb': 0.3,
+        'mutpb': 0.6,
+        'tournsize': 6
+    },
+    {
         'name': 'ea2',
         'dom_u': 0.5,
         'dom_l': -0.5,
@@ -101,6 +106,16 @@ EAs = [
         'cxpb': 0.75,
         'mutpb': 0.3,
         'tournsize': 5
+    },
+    {
+        'name': 'ea2',
+        'dom_u': 0.5,
+        'dom_l': -0.5,
+        'npop': 10,
+        'ngen': 4,
+        'cxpb': 0.4,
+        'mutpb': 0.5,
+        'tournsize': 2
     }
 ]
 
