@@ -163,29 +163,30 @@ for EA in EAs:
                                                      EA['ngen'], stats, verbose=True)
 
     # Track time
-    print(f'SIMULATION RUN FOR {round((time.perf_counter() - ini) / 60, 2)} mins')
+    print(f"SIMULATION {EA['name']} RUN FOR {round((time.perf_counter() - ini) / 60, 2)} mins")
 
     # Check if path exists
     if not os.path.exists(f"{experiment_name}/{EA['name']}/{algorithm_name}"):
         os.makedirs(f"{experiment_name}/{EA['name']}/{algorithm_name}")
     # Save fitness statistics
     # Params concatenation for file names
+    path = f"{experiment_name}/{EA['name']}/{algorithm_name}"
     params = f"{EA['npop']}_{EA['ngen']}_{EA['cxpb']}_{EA['mutpb']}_{EA['tournsize']}"
     pd.DataFrame(verb.chapters['fitness'])[
         ['gen', 'nevals', 'avg', 'std', 'max', 'min']
-    ].to_csv(f"{experiment_name}/{EA['name']}/{algorithm_name}/stats_fit_{params}.csv")
+    ].to_csv(f"{path}/stats_fit_{params}.csv")
     # Save size statistics
     pd.DataFrame(verb.chapters['size'])[
         ['gen', 'nevals', 'avg', 'std', 'max', 'min']
-    ].to_csv(f"{experiment_name}/{EA['name']}/{algorithm_name}/stats_size_{params}.csv")
+    ].to_csv(f"{path}/stats_size_{params}.csv")
 
     # Save the best solution
     best_solution = tools.selBest(final_pop, k=1)  # size: (1, n_vars)
     # Save the worst solution
     worst_solution = tools.selWorst(final_pop, k=1)  # size: (1, n_vars)
     # Save the best solution to a txt file
-    np.savetxt(f"{experiment_name}/{EA['name']}/{algorithm_name}/best_{params}.txt",
+    np.savetxt(f"{path}/best_{params}.txt",
                np.array(best_solution).T)
     # Save the worst solution to a txt file
-    np.savetxt(f"{experiment_name}/{EA['name']}/{algorithm_name}/worst_{params}.txt",
+    np.savetxt(f"{path}/worst_{params}.txt",
                np.array(worst_solution).T)
