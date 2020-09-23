@@ -68,7 +68,7 @@ EAs = [
 ]
 
 # Declare the number of runs
-run = 2
+run = 10
 # Declare an empty list for individual gains
 ind_gains4ea1 = list()
 ind_gains4ea2 = list()
