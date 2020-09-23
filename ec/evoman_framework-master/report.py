@@ -28,6 +28,7 @@ def evaluate(x):
     '''simulate with the given individual'''
     return simulation(env, x)
 
+
 # Declare variables of the environment
 n_hidden = 10  # the number of hidden layers
 
@@ -95,7 +96,8 @@ run = 10
 # Run 10 times independently
 for i in range(run):
     # Set seed to a different value each time
-    np.random.seed(i)
+    np.random.seed(i)  # np seed
+    random.seed(i)  # python built-in
 
     # Trace
     print(f'\nRUN {i+1}/10')
@@ -224,7 +226,7 @@ for i in range(run):
 runs = np.arange(1, run + 1)
 
 # Create figure and axes for the subplots
-axs = plt.figure(figsize=(15, 8)).subplots(4, 1)
+axs = plt.figure(figsize=(10, 8)).subplots(4, 1)
 
 # Plot average mean across all runs
 axs[0].set_title('Average mean')
