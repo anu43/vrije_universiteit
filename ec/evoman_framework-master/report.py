@@ -51,14 +51,40 @@ run_mode = 'train'  # train or test
 # The number of actions (individuals)
 n_vars = (env.get_num_sensors()+1)*n_hidden + (n_hidden+1)*5
 # The EA params
+# EAs = [
+#     {
+#         'name': 'ea1',
+#         'algorithm': '-eaSimple',
+#         'dom_u': 1,
+#         'dom_l': -1,
+#         'npop': 50,
+#         'ngen': 50,
+#         'cxpb': 0.2,
+#         'mutpb': 0.2,
+#         'tournsize': 3
+#     },
+#     {
+#         'name': 'ea2',
+#         'algorithm': '-eaMuPlusLambda',
+#         'dom_u': 0.5,
+#         'dom_l': -0.5,
+#         'npop': 30,
+#         'ngen': 50,
+#         'cxpb': 0.5,
+#         'mutpb': 0.5,
+#         'mu': 0.5,
+#         'tournsize': 5
+#     }
+# ]
+
 EAs = [
     {
         'name': 'ea1',
         'algorithm': '-eaSimple',
         'dom_u': 1,
         'dom_l': -1,
-        'npop': 50,
-        'ngen': 50,
+        'npop': 5,
+        'ngen': 3,
         'cxpb': 0.2,
         'mutpb': 0.2,
         'tournsize': 3
@@ -68,8 +94,8 @@ EAs = [
         'algorithm': '-eaMuPlusLambda',
         'dom_u': 0.5,
         'dom_l': -0.5,
-        'npop': 30,
-        'ngen': 50,
+        'npop': 3,
+        'ngen': 2,
         'cxpb': 0.5,
         'mutpb': 0.5,
         'mu': 0.5,
@@ -95,7 +121,8 @@ run = 10
 # Run 10 times independently
 for i in range(run):
     # Set seed to a different value each time
-    np.random.seed(i)
+    np.random.seed(i)  # np seed
+    random.seed(i)  # python built-in
 
     # Trace
     print(f'\nRUN {i+1}/10')
@@ -224,7 +251,7 @@ for i in range(run):
 runs = np.arange(1, run + 1)
 
 # Create figure and axes for the subplots
-axs = plt.figure(figsize=(15, 8)).subplots(4, 1)
+axs = plt.figure(figsize=(10, 8)).subplots(4, 1)
 
 # Plot average mean across all runs
 axs[0].set_title('Average mean')
