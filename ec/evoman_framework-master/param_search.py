@@ -15,6 +15,10 @@ experiment_name = 'param_search'
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
 
+# Disable the pop-up screen
+os.putenv('SDL_VIDEODRIVER', 'fbcon')
+os.environ["SDL_VIDEODRIVER"] = "dummy"
+
 
 def simulation(env, x):
     '''gives the individuals of one population and returns stats from the env'''
