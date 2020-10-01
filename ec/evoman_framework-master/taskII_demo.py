@@ -7,6 +7,7 @@ from demo_controller import player_controller
 # imports other libs
 import time
 import random
+import logging
 from deap import base, creator, tools, algorithms
 from sklearn.model_selection import ParameterGrid
 import pandas as pd
@@ -65,10 +66,21 @@ env = Environment(experiment_name=experiment_name,
 # The number of actions (individuals)
 n_vars = (env.get_num_sensors()+1)*n_hidden_neurons + (n_hidden_neurons+1)*5
 
+# Create log file if it does not exists
+# Check if path exists
+if not os.path.exists(f"{experiment_name}/"):
+    # Create the directory
+    os.makedirs(f"{experiment_name}/")
+
+# Keep logs of runs
+logging.basicConfig(filename=f'{experiment_name}/app{sys.argv[1]}.log',
+                    filemode='w', format='%(asctime)s - %(message)s',
+                    datefmt='%d-%b-%y %H:%M:%S')
+
 # Run two different EA
 for idx, param in enumerate(params):
     # Trace
-    print(f'\nRunning {idx + 1}/{len(params)}: {param}\n')
+    logging.warning(f'Running {idx + 1}/{len(params)}: {param}')
     # Try
     try:
         # Declare creator and individual names
@@ -126,16 +138,16 @@ for idx, param in enumerate(params):
                                                          stats, verbose=True)
 
         # Track time
-        print(f"SIMULATION RUN FOR {round((time.perf_counter() - ini) / 60, 2)} mins")
+        logging.warning(f"SIMULATION RUN FOR {round((time.perf_counter() - ini) / 60, 2)} mins")
 
         # Check if path exists
-        if not os.path.exists(f"{experiment_name}/run_{idx}/{algorithm_name}"):
+        if not os.path.exists(f"{experiment_name}/run_{idx + 1}/{algorithm_name}"):
             # Create the directory
-            os.makedirs(f"{experiment_name}/run_{idx}/{algorithm_name}")
+            os.makedirs(f"{experiment_name}/run_{idx + 1}/{algorithm_name}")
 
         # Save fitness statistics
         # Params concatenation for file names
-        path = f"{experiment_name}/run_{idx}/{algorithm_name}"
+        path = f"{experiment_name}/run_{idx + 1}/{algorithm_name}"
         fit = pd.DataFrame(verb.chapters['fitness'])[
             ['gen', 'nevals', 'avg', 'std', 'max', 'min']
         ]
@@ -147,7 +159,7 @@ for idx, param in enumerate(params):
         # If metric is better than best_param
         if best_param < metric:
             # Trace
-            print(f'Found better param setup. Last {best_param}. New {metric}')
+            logging.warning(f'Found better param setup. Last {best_param}. New {metric}')
             # Save it as the new one
             best_param = metric
             # Save the param setup
@@ -169,12 +181,12 @@ for idx, param in enumerate(params):
         np.savetxt(f"{path}/worst.txt",
                    np.array(worst_solution).T)
     # If there is a regular error or keyboard interruption
-    except (Exception, KeyboardInterrupt) as e:
+    except (Exception, KeyboardInterrupt):
         # Trace
-        print('------------')
-        print(f'Error occured in {idx + 1}th run. {e}')
-        print('Going to the next round')
-        print('------------')
+        logging.error('------------')
+        logging.error(f'Error occured in {idx + 1}th run. {Exception or KeyboardInterrupt}')
+        logging.error('Going to the next round')
+        logging.error('------------')
 
 # Print out the best param
-print(f'\nBest param setup: {best_setup}')
+logging.warning(f'Best param setup: {best_setup}')
