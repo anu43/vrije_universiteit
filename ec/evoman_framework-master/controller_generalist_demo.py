@@ -35,7 +35,6 @@ print('\n LOADING SAVED GENERALIST SOLUTION FOR ALL ENEMIES \n')
 
 # tests saved demo solutions for each enemy
 for en in range(1, 9):
-	
 	#Update the enemy
 	env.update_parameter('enemies',[en])
 
