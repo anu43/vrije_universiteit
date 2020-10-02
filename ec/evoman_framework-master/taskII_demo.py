@@ -40,8 +40,8 @@ best_param = - np.inf  # Initialize the best parameter
 
 # Declare parameters to search in a combination
 params = {
-    'npop': [15],
-    'ngen': [5],
+    'npop': [50],
+    'ngen': [50],
     'cxpb': [0.9],
     'mutpb': [0.1],
     'tournsize': [3],
