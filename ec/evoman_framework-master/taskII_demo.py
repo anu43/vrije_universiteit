@@ -44,12 +44,11 @@ best_param = - np.inf  # Initialize the best parameter
 
 # Declare parameters to search in a combination
 params = {
-    'npop': [50],
-    'ngen': [50],
+    'npop': [40],
+    'ngen': [35],
     'cxpb': [0.9],
     'mutpb': [0.1],
     'tournsize': [3],
-    'mu': [15],
     'typeOfCrossover': ['cxTwoPoint', 'cxUniform', 'cxBlend'],
     'typeOfMutation': ['mutGaussian', 'mutShuffleIndexes', 'mutUniformInt'],
     'typeOfTournament': ['selTournament']
@@ -137,6 +136,10 @@ for idx, param in enumerate(params):
         # Populate
         pop = toolbox.population(n=param['npop'])  # size: (npop, n_vars)
 
+        # Set the random value for lambda_
+        lambda_ = np.random.randint(param['npop'] - 10,
+                                    param['npop'], 1)[0]
+
         # Track time
         ini = time.perf_counter()
 
@@ -145,8 +148,8 @@ for idx, param in enumerate(params):
             algorithm_name = 'eaMuPlusLambda'
             # Run simulations
             final_pop, verb = algorithms.eaMuPlusLambda(pop, toolbox,
-                                                        param['mu'],
                                                         param['npop'],
+                                                        lambda_,
                                                         param['cxpb'],
                                                         param['mutpb'],
                                                         param['ngen'],
@@ -156,8 +159,8 @@ for idx, param in enumerate(params):
             algorithm_name = 'eaMuCommaLambda'
             # Run simulations
             final_pop, verb = algorithms.eaMuCommaLambda(pop, toolbox,
-                                                         param['mu'],
                                                          param['npop'],
+                                                         lambda_,
                                                          param['cxpb'],
                                                          param['mutpb'],
                                                          param['ngen'],
