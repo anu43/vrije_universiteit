@@ -32,6 +32,10 @@ def evaluate(x):
     return simulation(env, x)
 
 
+# Set seed for both numpy and random libs
+np.random.seed(43)
+random.seed(43)
+
 # Declare global variables
 experiment_name = 'taskII'  # Declare experiment name
 n_hidden_neurons = 10  # Declare the number of hidden
@@ -45,8 +49,7 @@ params = {
     'cxpb': [0.9],
     'mutpb': [0.1],
     'tournsize': [3],
-    'mu': [2],
-    'lambda_': [5],
+    'mu': [15],
     'typeOfCrossover': ['cxTwoPoint', 'cxUniform', 'cxBlend'],
     'typeOfMutation': ['mutGaussian', 'mutShuffleIndexes', 'mutUniformInt'],
     'typeOfTournament': ['selTournament']
@@ -143,7 +146,7 @@ for idx, param in enumerate(params):
             # Run simulations
             final_pop, verb = algorithms.eaMuPlusLambda(pop, toolbox,
                                                         param['mu'],
-                                                        param['lambda_'],
+                                                        param['npop'],
                                                         param['cxpb'],
                                                         param['mutpb'],
                                                         param['ngen'],
@@ -154,7 +157,7 @@ for idx, param in enumerate(params):
             # Run simulations
             final_pop, verb = algorithms.eaMuCommaLambda(pop, toolbox,
                                                          param['mu'],
-                                                         param['lambda_'],
+                                                         param['npop'],
                                                          param['cxpb'],
                                                          param['mutpb'],
                                                          param['ngen'],
