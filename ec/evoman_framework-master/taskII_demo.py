@@ -40,12 +40,16 @@ best_param = - np.inf  # Initialize the best parameter
 
 # Declare parameters to search in a combination
 params = {
-    'npop': [5],
-    'ngen': [3],
-    'cxpb': [0.75],
-    'mutpb': [0.25],
-    'tournsize': [3, 5],
-    'mu': [0.25]
+    'npop': [15],
+    'ngen': [5],
+    'cxpb': [0.9],
+    'mutpb': [0.1],
+    'tournsize': [3],
+    'mu': [2],
+    'lambda_': [5],
+    'typeOfCrossover': ['cxTwoPoint', 'cxUniform', 'cxBlend'],
+    'typeOfMutation': ['mutGaussian', 'mutShuffleIndexes', 'mutUniformInt'],
+    'typeOfTournament': ['selTournament']
 }
 # Turn parameters into a grid
 params = ParameterGrid(params)
@@ -80,6 +84,8 @@ logging.basicConfig(filename=f'{experiment_name}/app{sys.argv[1]}.log',
 # Run two different EA
 for idx, param in enumerate(params):
     # Trace
+    print(f'Running {idx + 1}/{len(params)}: {param}')
+    # Log
     logging.warning(f'Running {idx + 1}/{len(params)}: {param}')
     # Try
     try:
@@ -91,15 +97,30 @@ for idx, param in enumerate(params):
         creator.create(IND, np.ndarray, fitness=getattr(creator, FIT_MAX))
 
         toolbox = base.Toolbox()
-        toolbox.register("attr_float", random.uniform, -1, 1)
+        toolbox.register("attr_uniform", random.uniform, -1, 1)
         toolbox.register("individual", tools.initRepeat,
-                         getattr(creator, IND), toolbox.attr_float,
+                         getattr(creator, IND), toolbox.attr_uniform,
                          n=n_vars)
         toolbox.register("population", tools.initRepeat, list, toolbox.individual)
         toolbox.register("evaluate", evaluate)
-        toolbox.register("mate", tools.cxTwoPoint)
-        toolbox.register("mutate", tools.mutFlipBit, indpb=0.10)
-        toolbox.register("select", tools.selTournament, tournsize=param['tournsize'])
+        # If the type of crossover
+        if param['typeOfCrossover'] == 'cxTwoPoint':
+            toolbox.register("mate", tools.cxTwoPoint)  # tweak
+        elif param['typeOfCrossover'] == 'cxUniform':
+            toolbox.register("mate", tools.cxUniform, indpb=0.5)  # tweak
+        elif param['typeOfCrossover'] == 'cxBlend':
+            toolbox.register("mate", tools.cxBlend, alpha=0.5)  # tweak
+        # If the type of mutation
+        if param['typeOfMutation'] == 'mutGaussian':
+            toolbox.register("mutate", tools.mutGaussian,
+                             mu=0, sigma=0.05, indpb=0.10)  # tweak
+        elif param['typeOfMutation'] == 'mutShuffleIndexes':
+            toolbox.register("mutate", tools.mutShuffleIndexes, indpb=0.10)  # tweak
+        elif param['typeOfMutation'] == 'mutUniformInt':
+            toolbox.register("mutate", tools.mutUniformInt,
+                             low=-1, up=1, indpb=0.10)  # tweak
+        toolbox.register("select", tools.selTournament,
+                         tournsize=param['tournsize'])
 
         # Statistics
         stat_fit = tools.Statistics(lambda ind: ind.fitness.values)  # Fitness statistics
@@ -121,23 +142,27 @@ for idx, param in enumerate(params):
             algorithm_name = 'eaMuPlusLambda'
             # Run simulations
             final_pop, verb = algorithms.eaMuPlusLambda(pop, toolbox,
-                                                        int(param['mu'] * param['npop']) + 1,
-                                                        int(param['npop']/5) + 1, param['cxpb'],
-                                                        param['mutpb'], param['ngen'],
+                                                        param['mu'],
+                                                        param['lambda_'],
+                                                        param['cxpb'],
+                                                        param['mutpb'],
+                                                        param['ngen'],
                                                         stats, verbose=True)
         elif sys.argv[1] == '-eaMuCommaLambda':
             # Declare algorithm name
             algorithm_name = 'eaMuCommaLambda'
             # Run simulations
             final_pop, verb = algorithms.eaMuCommaLambda(pop, toolbox,
-                                                         int(param['mu'] * param['npop']) + 1,
-                                                         int(1.25 * param['npop']) + 1,
+                                                         param['mu'],
+                                                         param['lambda_'],
                                                          param['cxpb'],
                                                          param['mutpb'],
                                                          param['ngen'],
                                                          stats, verbose=True)
 
         # Track time
+        print(f"SIMULATION RUN FOR {round((time.perf_counter() - ini) / 60, 2)} mins")
+        # Log time
         logging.warning(f"SIMULATION RUN FOR {round((time.perf_counter() - ini) / 60, 2)} mins")
 
         # Check if path exists
@@ -158,6 +183,8 @@ for idx, param in enumerate(params):
         metric = fit['max'].mean()
         # If metric is better than best_param
         if best_param < metric:
+            # Trace
+            print(f'Found better param setup. Last {best_param}. New {metric}')
             # Trace
             logging.warning(f'Found better param setup. Last {best_param}. New {metric}')
             # Save it as the new one
@@ -180,13 +207,21 @@ for idx, param in enumerate(params):
         # Save the worst solution to a txt file
         np.savetxt(f"{path}/worst.txt",
                    np.array(worst_solution).T)
-    # If there is a regular error or keyboard interruption
-    except (Exception, KeyboardInterrupt):
+
+    # If there is a regular error
+    except Exception as e:
         # Trace
+        print('------------')
+        print(f'Error occured in {idx + 1}th run. {e}')
+        print('Going to the next round')
+        print('------------')
+        # Log
         logging.error('------------')
-        logging.error(f'Error occured in {idx + 1}th run. {Exception or KeyboardInterrupt}')
+        logging.error(f'Error occured in {idx + 1}th run. {e}')
         logging.error('Going to the next round')
         logging.error('------------')
 
 # Print out the best param
+print(f'Best param setup: {best_setup} and its score: {best_param}')
+# Log the best param
 logging.warning(f'Best param setup: {best_setup}')
