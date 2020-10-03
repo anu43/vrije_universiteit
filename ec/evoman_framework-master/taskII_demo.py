@@ -44,13 +44,13 @@ best_param = - np.inf  # Initialize the best parameter
 
 # Declare parameters to search in a combination
 params = {
-    'npop': [40],
-    'ngen': [35],
-    'cxpb': [0.9],
-    'mutpb': [0.1],
-    'tournsize': [3],
-    'typeOfCrossover': ['cxTwoPoint', 'cxUniform', 'cxBlend'],
-    'typeOfMutation': ['mutGaussian', 'mutShuffleIndexes', 'mutUniformInt'],
+    'npop': [30, 50, 100],
+    'ngen': [30, 50],
+    'cxpb': [0.5, 0.75, 0.9],
+    'mutpb': [0.1, 0.3, 0.5],
+    'tournsize': [3, 5, 10],
+    'typeOfCrossover': ['cxBlend'],
+    'typeOfMutation': ['mutShuffleIndexes'],
     'typeOfTournament': ['selTournament']
 }
 # Turn parameters into a grid
