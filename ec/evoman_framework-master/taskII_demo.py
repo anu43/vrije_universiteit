@@ -230,4 +230,4 @@ for idx, param in enumerate(params):
 # Print out the best param
 print(f'Best param setup: {best_setup} and its score: {best_param}')
 # Log the best param
-logging.warning(f'Best param setup: {best_setup}')
+logging.warning(f'Best param setup: {best_setup} and its score: {best_param}')
