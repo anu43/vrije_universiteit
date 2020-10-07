@@ -44,8 +44,8 @@ best_param = - np.inf  # Initialize the best parameter
 
 # Declare parameters to search in a combination
 params = {
-    'npop': [50, 100],
-    'ngen': [40, 50],
+    'npop': [30],
+    'ngen': [30],
     'cxpb': [0.5],
     'mutpb': [0.5],
     'tournsize': [3, 5],
@@ -58,7 +58,7 @@ params = ParameterGrid(params)
 
 # initializes simulation in multi evolution mode, for multiple static enemies.
 env = Environment(experiment_name=experiment_name,
-                  enemies=[1, 3, 5, 7, 8],
+                  enemies=np.arange(1, 9),
                   multiplemode="yes",
                   playermode="ai",
                   player_controller=player_controller(n_hidden_neurons),
