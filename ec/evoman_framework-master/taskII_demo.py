@@ -58,7 +58,7 @@ params = ParameterGrid(params)
 
 # initializes simulation in multi evolution mode, for multiple static enemies.
 env = Environment(experiment_name=experiment_name,
-                  enemies=np.arange(1, 9),
+                  enemies=[1, 2, 4, 5, 8],
                   multiplemode="yes",
                   playermode="ai",
                   player_controller=player_controller(n_hidden_neurons),
