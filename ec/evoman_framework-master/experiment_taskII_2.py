@@ -145,7 +145,7 @@ for idx in range(10):
             # Run simulations
             final_pop, verb = algorithms.eaMuPlusLambda(pop, toolbox,
                                                         param['npop'],
-                                                        lambda_,
+                                                        param['lambda_'],
                                                         param['cxpb'],
                                                         param['mutpb'],
                                                         param['ngen'],
@@ -156,7 +156,7 @@ for idx in range(10):
             # Run simulations
             final_pop, verb = algorithms.eaMuCommaLambda(pop, toolbox,
                                                          param['npop'],
-                                                         lambda_,
+                                                         param['lambda_'],
                                                          param['cxpb'],
                                                          param['mutpb'],
                                                          param['ngen'],
@@ -164,8 +164,6 @@ for idx in range(10):
 
         # Track time
         print(f"SIMULATION RUN FOR {round((time.perf_counter() - ini) / 60, 2)} mins")
-        # Log time
-        logging.warning(f"SIMULATION RUN FOR {round((time.perf_counter() - ini) / 60, 2)} mins")
 
         # Check if path exists
         if not os.path.exists(f"{experiment_name}/run_{idx + 1}/"):

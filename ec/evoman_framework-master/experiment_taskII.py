@@ -85,11 +85,6 @@ ea1_stdOfmaxs = list()  # Tracking for the std of the max vals of EA1
 
 fitnesses = list()
 
-# Keep logs of runs
-logging.basicConfig(filename=f'{experiment_name}/app{sys.argv[1]}.log',
-                    filemode='w', format='%(asctime)s - %(message)s',
-                    datefmt='%d-%b-%y %H:%M:%S')
-
 # Run two different EA
 for idx in range(10):
     # Trace
@@ -169,8 +164,6 @@ for idx in range(10):
 
         # Track time
         print(f"SIMULATION RUN FOR {round((time.perf_counter() - ini) / 60, 2)} mins")
-        # Log time
-        logging.warning(f"SIMULATION RUN FOR {round((time.perf_counter() - ini) / 60, 2)} mins")
 
         # Check if path exists
         if not os.path.exists(f"{experiment_name}/run_{idx + 1}/"):
