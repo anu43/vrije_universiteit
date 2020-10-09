@@ -102,8 +102,11 @@ np.savetxt(f'{experiment_name}/data.txt', np.array(data))
 plt.title('Individual Gains over 10 runs')
 # Plot
 plt.boxplot(data, labels=[group.upper() for group in groups])
+# Set the axis labels
+plt.xlabel('Groups')  # x-axis
+plt.ylabel('Individual Gain')  # y-axis
 # Save the boxplot
-plt.savefig(f'{experiment_name}/ind_gain')
+plt.savefig(f'{experiment_name}/ind_gain.pdf', format='pdf')
 
 # Do a statistical test
 print('t-test:', stats.ttest_ind(ind_gains4group1, ind_gains4group2))
