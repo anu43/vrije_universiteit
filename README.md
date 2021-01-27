@@ -1,2 +1,2 @@
 # vrije_universiteit
-all projects built-in along university
+all projects built-in during the courses
